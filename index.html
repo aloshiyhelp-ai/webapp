@@ -10,7 +10,7 @@
     
     <!-- CSS fayllari -->
     <link rel="stylesheet" href="/media/style/css/style.css">
-    <link rel="stylesheet" href="/media/style/css/light.css" id="theme-style">
+    <link rel="stylesheet" href="/media/style/css/dark.css" id="theme-style">
     
     <!-- Favicon -->
     <link rel="icon" href="/media/images/favicon.ico" type="image/x-icon">
@@ -96,6 +96,17 @@
             console.warn("⚠️ Telegram WebApp topilmadi!");
         }
     });
+</script>
+<script>
+    // DOM yuklanishidan oldin dark theme o'rnatish
+    (function() {
+        const savedTheme = localStorage.getItem('theme') || 'dark'; // ← DARK DEFAULT
+        const link = document.createElement('link');
+        link.id = 'theme-style';
+        link.rel = 'stylesheet';
+        link.href = `/media/style/css/${savedTheme}.css`;
+        document.head.appendChild(link);
+    })();
 </script>
 </body>
 </html>
