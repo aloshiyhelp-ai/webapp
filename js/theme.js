@@ -1,101 +1,163 @@
-// Theme Management
+// ============================================
+// theme.js - Mavzu boshqaruvchi
+// ============================================
+
 class ThemeManager {
     constructor() {
-        // DARK ni default qilish
-        this.theme = localStorage.getItem('theme') || 'dark'; // ← DARK
+        // Foydalanuvchi saqlagan temani olish, yo'q bo'lsa DARK
+        this.theme = localStorage.getItem('diniy_theme') || 'dark';
+        
+        // Elementlar
         this.themeStyle = document.getElementById('theme-style');
         this.themeToggle = document.getElementById('themeToggle');
-        this.themeIcon = this.themeToggle?.querySelector('.theme-icon');
+        this.themeIcon = document.querySelector('.theme-icon');
+        
+        // Telegram WebApp
+        this.telegram = window.TelegramWebApp;
         
         this.init();
     }
     
     init() {
-        // Dastlabki mavzuni yuklash
+        // 1. Dastlabki temani yuklash
         this.applyTheme();
         
-        // Tugma hodisasi
+        // 2. Tugma hodisasi
         if (this.themeToggle) {
-            this.themeToggle.addEventListener('click', () => this.toggleTheme());
-        }
-        
-        // System theme o'zgarishini kuzatish
-        if (window.matchMedia) {
-            const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-            mediaQuery.addEventListener('change', (e) => {
-                if (!localStorage.getItem('theme')) {
-                    this.setTheme(e.matches ? 'dark' : 'light');
-                }
+            this.themeToggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.toggleTheme();
             });
         }
         
-        // Telegram theme o'zgarishini kuzatish
-        if (window.TelegramWebApp) {
-            TelegramWebApp.onEvent('themeChanged', () => {
+        // 3. System theme o'zgarishini kuzatish
+        if (window.matchMedia) {
+            const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+            
+            // Faqat foydalanuvchi temani o'zgartirmagan bo'lsa
+            if (!localStorage.getItem('diniy_theme')) {
+                darkModeMediaQuery.addEventListener('change', (e) => {
+                    this.setTheme(e.matches ? 'dark' : 'light', false);
+                });
+                
+                // Dastlabki system theme
+                this.setTheme(darkModeMediaQuery.matches ? 'dark' : 'light', false);
+            }
+        }
+        
+        // 4. Telegram theme o'zgarishini kuzatish
+        if (this.telegram) {
+            this.telegram.onEvent('themeChanged', () => {
                 this.syncWithTelegram();
             });
+            
+            // Dastlabki Telegram theme
+            this.syncWithTelegram();
         }
+        
+        console.log(`✅ ThemeManager ishga tushdi: ${this.theme}`);
     }
     
     applyTheme() {
-        // CSS faylini o'zgartirish
+        // 1. CSS faylini o'zgartirish
         if (this.themeStyle) {
             this.themeStyle.href = `/media/style/css/${this.theme}.css`;
         }
         
-        // Ikonkani o'zgartirish (agar mavjud bo'lsa)
+        // 2. Ikonkani o'zgartirish
         if (this.themeIcon) {
             this.themeIcon.textContent = this.theme === 'dark' ? '☀️' : '🌙';
+            this.themeIcon.title = this.theme === 'dark' 
+                ? 'Kunduzgi rejimga o\'tish' 
+                : 'Tungi rejimga o\'tish';
         }
         
-        // Body class qo'shish
+        // 3. Body class qo'shish
         document.body.classList.remove('theme-light', 'theme-dark');
         document.body.classList.add(`theme-${this.theme}`);
         
-        // LocalStorage da saqlash
-        localStorage.setItem('theme', this.theme);
-        
-        // Telegram WebApp ga sinxronizatsiya
+        // 4. Telegram WebApp ga sinxronizatsiya
         this.syncWithTelegram();
         
-        console.log(`Theme changed to: ${this.theme}`);
+        // 5. Debug
+        console.log(`🎨 Tema o'zgartirildi: ${this.theme}`);
     }
     
     toggleTheme() {
-        this.theme = this.theme === 'light' ? 'dark' : 'light';
-        this.applyTheme();
+        const newTheme = this.theme === 'light' ? 'dark' : 'light';
+        this.setTheme(newTheme, true);
         
         // Haptic feedback
-        if (window.TelegramWebApp) {
-            TelegramWebApp.HapticFeedback.impactOccurred('light');
+        if (this.telegram) {
+            this.telegram.HapticFeedback.impactOccurred('light');
+        }
+        
+        // Notification
+        if (this.telegram && this.telegram.showAlert) {
+            this.telegram.showAlert(
+                newTheme === 'dark' 
+                    ? '🌙 Tungi rejim' 
+                    : '☀️ Kunduzgi rejim'
+            );
         }
     }
     
-    setTheme(theme) {
-        if (['light', 'dark'].includes(theme)) {
-            this.theme = theme;
-            this.applyTheme();
+    setTheme(theme, saveToStorage = true) {
+        if (!['light', 'dark'].includes(theme)) return;
+        
+        // Tema o'zgartirish
+        this.theme = theme;
+        this.applyTheme();
+        
+        // LocalStorage ga saqlash (agar kerak bo'lsa)
+        if (saveToStorage) {
+            localStorage.setItem('diniy_theme', theme);
+            console.log(`💾 Tema saqlandi: ${theme}`);
         }
+        
+        // Botga yuborish (agar Telegram orqali ochilgan bo'lsa)
+        this.sendThemeToBot();
     }
     
     syncWithTelegram() {
-        if (!window.TelegramWebApp) return;
+        if (!this.telegram) return;
         
-        const telegramTheme = TelegramWebApp.colorScheme;
+        const telegramTheme = this.telegram.colorScheme;
         
-        // Agar foydalanuvchi mavzuni qo'lda o'zgartirmagan bo'lsa
-        if (!localStorage.getItem('theme')) {
-            this.setTheme(telegramTheme === 'dark' ? 'dark' : 'light');
+        // Faqat foydalanuvchi temani o'zgartirmagan bo'lsa
+        if (!localStorage.getItem('diniy_theme')) {
+            this.setTheme(telegramTheme === 'dark' ? 'dark' : 'light', false);
         }
         
         // Telegram header va background ranglarini sozlash
         if (this.theme === 'dark') {
-            TelegramWebApp.setHeaderColor('#1a1a1a');
-            TelegramWebApp.setBackgroundColor('#121212');
+            this.telegram.setHeaderColor('#1a1a1a');
+            this.telegram.setBackgroundColor('#121212');
         } else {
-            TelegramWebApp.setHeaderColor('#ffffff');
-            TelegramWebApp.setBackgroundColor('#f5f7fa');
+            this.telegram.setHeaderColor('#ffffff');
+            this.telegram.setBackgroundColor('#f5f7fa');
         }
+        
+        // MainButton rangini sozlash
+        if (this.telegram.MainButton && this.telegram.MainButton.setParams) {
+            this.telegram.MainButton.setParams({
+                color: this.theme === 'dark' ? '#4a90e2' : '#2c5aa0'
+            });
+        }
+    }
+    
+    sendThemeToBot() {
+        if (!this.telegram) return;
+        
+        // Botga tema o'zgarishini yuborish
+        this.telegram.sendData(JSON.stringify({
+            action: 'theme_changed',
+            theme: this.theme,
+            timestamp: new Date().toISOString(),
+            source: 'webapp'
+        }));
+        
+        console.log(`📤 Botga tema yuborildi: ${this.theme}`);
     }
     
     getCurrentTheme() {
@@ -105,27 +167,83 @@ class ThemeManager {
     isDarkMode() {
         return this.theme === 'dark';
     }
+    
+    // Foydalanuvchi temani o'chirish (default ga qaytarish)
+    resetTheme() {
+        localStorage.removeItem('diniy_theme');
+        this.theme = window.matchMedia?.('(prefers-color-scheme: dark)').matches 
+            ? 'dark' 
+            : 'light';
+        this.applyTheme();
+        console.log('🔄 Tema reset qilindi');
+    }
 }
 
-// Global theme manager
-window.themeManager = new ThemeManager();
+// ============================================
+// GLOBAL INITIALIZATION
+// ============================================
 
-// Tezkor funktsiyalar
-window.toggleTheme = function() {
-    window.themeManager?.toggleTheme();
-};
-
-window.setTheme = function(theme) {
-    window.themeManager?.setTheme(theme);
-};
-
-window.getTheme = function() {
-    return window.themeManager?.getCurrentTheme();
-};
-
-// DOM yuklanganda tekshirish
+// DOM yuklanganda
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 DOM yuklandi, ThemeManager ishga tushmoqda...');
+    
+    // Global TelegramWebApp
+    window.TelegramWebApp = window.Telegram?.WebApp;
+    
+    // ThemeManager yaratish
     if (!window.themeManager) {
         window.themeManager = new ThemeManager();
+        
+        // Global funksiyalar
+        window.toggleTheme = function() {
+            window.themeManager?.toggleTheme();
+        };
+        
+        window.setTheme = function(theme) {
+            window.themeManager?.setTheme(theme, true);
+        };
+        
+        window.getTheme = function() {
+            return window.themeManager?.getCurrentTheme();
+        };
+        
+        window.resetTheme = function() {
+            window.themeManager?.resetTheme();
+        };
+        
+        // Debug
+        console.log('✅ ThemeManager global qilindi');
+        console.log(`📊 Joriy tema: ${window.themeManager.getCurrentTheme()}`);
+        console.log(`💾 Saqlangan tema: ${localStorage.getItem('diniy_theme') || 'yo\'q (default: dark)'}`);
     }
 });
+
+// Sayt yuklanganda tekshirish
+window.addEventListener('load', function() {
+    console.log('📈 Sayt to\'liq yuklandi');
+    
+    // Tugma title ni sozlash
+    const toggleBtn = document.getElementById('themeToggle');
+    if (toggleBtn && window.themeManager) {
+        const theme = window.themeManager.getCurrentTheme();
+        toggleBtn.title = theme === 'dark' 
+            ? 'Kunduzgi rejimga o\'tish' 
+            : 'Tungi rejimga o\'tish';
+    }
+});
+
+// Error handling
+window.addEventListener('error', function(e) {
+    console.error('❌ Theme xatosi:', e.error);
+    
+    // Tema xatosi bo'lsa, default dark qilish
+    if (e.message.includes('theme') || e.message.includes('Theme')) {
+        const style = document.getElementById('theme-style');
+        if (style) {
+            style.href = '/media/style/css/dark.css';
+            document.body.classList.add('theme-dark');
+        }
+    }
+});
+
+console.log('✅ theme.js fayli yuklandi');
