@@ -544,3 +544,20 @@ body {
 .shadow-sm { box-shadow: 0 2px 4px var(--card-shadow); }
 .shadow { box-shadow: 0 4px 12px var(--card-shadow); }
 .shadow-lg { box-shadow: 0 8px 25px var(--card-shadow); }
+/* Logo class qo'shish */
+.logo {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    background: url('/media/images/logo.svg') no-repeat center;
+    background-size: contain;
+}
+
+/* Favicon HTML ichida */
+.favicon-placeholder {
+    width: 32px;
+    height: 32px;
+    background: url('/media/images/favicon.svg') no-repeat center;
+    background-size: contain;
+    display: inline-block;
+}
