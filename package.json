@@ -1,0 +1,26 @@
+{
+  "name": "diniy-webapp",
+  "version": "1.0.0",
+  "description": "Telegram WebApp for Islamic Studies",
+  "main": "index.html",
+  "scripts": {
+    "dev": "echo 'Static HTML site - no dev server needed'",
+    "build": "echo 'No build process for static site'",
+    "start": "echo 'Open index.html in browser'",
+    "vercel-build": "echo 'Static site deployed successfully'"
+  },
+  "keywords": [
+    "telegram",
+    "webapp",
+    "islamic",
+    "quran",
+    "hadis"
+  ],
+  "author": "aloshiyhelp-ai",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {},
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
