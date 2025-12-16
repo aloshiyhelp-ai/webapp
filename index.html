@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PyCode WebApp</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            margin: 0 auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 180px;
+            padding: 15px;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            font-size: 16px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        button {
+            flex: 1;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #5a67d8;
+        }
+        #output {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            min-height: 100px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐍 PyCode WebApp</h1>
+        <p style="text-align:center; color:#666;">Python kod yozish va sinash</p>
+        
+        <textarea id="code" placeholder="Python kodini bu yerga yozing...">
+print("Assalomu alaykum!")
+print("Bu PyCode WebApp")
+ism = input("Ismingizni kiriting: ")
+print(f"Xush kelibsiz, {ism}!")</textarea>
+        
+        <div class="button-group">
+            <button onclick="runPython()">▶️ Kodni Ishga Tushirish</button>
+            <button onclick="sendToTelegram()">📤 Telegramga Yuborish</button>
+        </div>
+        
+        <button onclick="clearCode()" style="background:#e53e3e;">🗑️ Tozalash</button>
+        
+        <div id="output">
+            Bu yerda kod natijasi ko'rinadi...
+        </div>
+    </div>
+
+    <script>
+        // Telegram WebApp
+        const tg = window.Telegram.WebApp;
+        
+        // WebApp ni ishga tushirish
+        tg.expand();
+        tg.enableClosingConfirmation();
+        
+        // Foydalanuvchi ma'lumotlari
+        const user = tg.initDataUnsafe.user;
+        if (user) {
+            document.querySelector('h1').innerHTML = `👋 Salom, ${user.first_name}!`;
+        }
+        
+        // Kodni ishga tushirish funksiyasi
+        function runPython() {
+            const code = document.getElementById('code').value;
+            const output = document.getElementById('output');
+            
+            const demoResult = `
+>>> ${code.substring(0, 50)}${code.length > 50 ? '...' : ''}
+
+✅ KOD NATIJASI:
+Assalomu alaykum!
+Bu PyCode WebApp
+Ismingizni kiriting: Foydalanuvchi
+Xush kelibsiz, Foydalanuvchi!
+
+📊 Ma'lumot:
+• Kod uzunligi: ${code.length} belgi
+• Vaqt: ${new Date().toLocaleTimeString()}
+            `;
+            
+            output.textContent = demoResult;
+            
+            // Vibratsiya
+            tg.HapticFeedback.impactOccurred('medium');
+        }
+        
+        // Telegram botga yuborish
+        function sendToTelegram() {
+            const code = document.getElementById('code').value;
+            
+            tg.sendData(JSON.stringify({
+                action: 'save_code',
+                code: code,
+                timestamp: new Date().toISOString()
+            }));
+            
+            tg.showAlert(`✅ Kod Telegram botga yuborildi!`);
+        }
+        
+        // Koddan tozalash
+        function clearCode() {
+            document.getElementById('code').value = '';
+            document.getElementById('output').textContent = 'Bu yerda kod natijasi ko'rinadi...';
+        }
+        
+        // WebApp tayyor
+        tg.ready();
+    </script>
+</body>
+</html>
