@@ -1,285 +1,381 @@
 <!DOCTYPE html>
-<html>
+<html lang="uz">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram WebApp</title>
+    <title>Diniy Bilim - WebApp</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* Telegram standart stillari */
-        :root {
-            --tg-theme-bg-color: #ffffff;
-            --tg-theme-text-color: #000000;
-            --tg-theme-hint-color: #999999;
-            --tg-theme-link-color: #2481cc;
-            --tg-theme-button-color: #2481cc;
-            --tg-theme-button-text-color: #ffffff;
-            --tg-theme-secondary-bg-color: #f1f1f1;
-        }
-        
-        /* Dark theme uchun */
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --tg-theme-bg-color: #0f0f0f;
-                --tg-theme-text-color: #ffffff;
-                --tg-theme-hint-color: #aaaaaa;
-                --tg-theme-secondary-bg-color: #1a1a1a;
-            }
-        }
-        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+        }
+        
+        :root {
+            --primary-color: #2c5aa0;
+            --secondary-color: #4a90e2;
+            --accent-color: #d4a017;
+            --text-color: #333;
+            --light-bg: #f8f9fa;
+            --card-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: var(--tg-theme-bg-color);
-            color: var(--tg-theme-text-color);
-            line-height: 1.5;
-            padding: 0;
-            margin: 0;
-            min-height: 100vh;
-            transition: background-color 0.3s, color 0.3s;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: var(--text-color);
+            padding-bottom: 70px; /* Pastki menyu uchun joy */
         }
         
-        .container {
-            max-width: 100%;
-            padding: 16px;
-            margin: 0 auto;
-        }
-        
-        /* Header - Telegram standarti */
+        /* Header */
         .header {
-            background: var(--tg-theme-button-color);
-            color: var(--tg-theme-button-text-color);
-            padding: 12px 16px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px 16px;
             text-align: center;
-            font-weight: 500;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
-        /* Card elementlari - Material Design ga o'xshash */
-        .card {
-            background: var(--tg-theme-secondary-bg-color);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
-            transition: transform 0.2s;
+        .header h1 {
+            font-size: 22px;
+            margin-bottom: 5px;
         }
         
-        .card:hover {
-            transform: translateY(-2px);
-        }
-        
-        /* Tugmalar - Telegram standart stillari */
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 14px 20px;
-            background: var(--tg-theme-button-color);
-            color: var(--tg-theme-button-text-color);
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 500;
-            text-align: center;
-            cursor: pointer;
-            margin: 8px 0;
-            transition: opacity 0.2s;
-        }
-        
-        .btn:hover {
+        .header p {
+            font-size: 14px;
             opacity: 0.9;
         }
         
-        .btn-secondary {
-            background: var(--tg-theme-secondary-bg-color);
-            color: var(--tg-theme-text-color);
-            border: 1px solid var(--tg-theme-hint-color);
+        /* Asosiy bo'limlar */
+        .main-sections {
+            padding: 20px 16px;
         }
         
-        /* Inputlar */
-        .input-group {
-            margin-bottom: 16px;
+        .section-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
-        .input-label {
-            display: block;
-            margin-bottom: 6px;
-            color: var(--tg-theme-hint-color);
-            font-size: 14px;
+        .section-title i {
+            font-size: 20px;
         }
         
-        .input-field {
-            width: 100%;
-            padding: 12px 16px;
-            background: var(--tg-theme-secondary-bg-color);
-            border: 1px solid var(--tg-theme-hint-color);
-            border-radius: 10px;
-            color: var(--tg-theme-text-color);
+        /* Katta kartalar - 2x2 tartibda */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px 15px;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 2px solid transparent;
+            cursor: pointer;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            border-color: var(--accent-color);
+        }
+        
+        .card-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+            color: var(--primary-color);
+        }
+        
+        .card-title {
             font-size: 16px;
-            transition: border-color 0.2s;
+            font-weight: 600;
+            margin-bottom: 5px;
         }
         
-        .input-field:focus {
-            outline: none;
-            border-color: var(--tg-theme-button-color);
+        .card-desc {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
         }
         
-        /* List elementlari */
-        .list {
-            list-style: none;
+        /* Tasnif yozuvi */
+        .category-tag {
+            display: inline-block;
+            background: rgba(44, 90, 160, 0.1);
+            color: var(--primary-color);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-top: 10px;
+            font-weight: 500;
         }
         
+        /* Pastki menyu */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+            z-index: 1000;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #888;
+            transition: color 0.3s;
+            flex: 1;
+            padding: 5px 0;
+        }
+        
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+        
+        .nav-icon {
+            font-size: 22px;
+            margin-bottom: 4px;
+        }
+        
+        .nav-text {
+            font-size: 11px;
+            font-weight: 500;
+        }
+        
+        /* Kontent maydoni */
+        .content-area {
+            padding: 20px 16px;
+            min-height: 300px;
+        }
+        
+        .content-title {
+            font-size: 20px;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent-color);
+        }
+        
+        /* Sura/Hadis ro'yxati */
         .list-item {
-            padding: 14px 16px;
-            border-bottom: 1px solid var(--tg-theme-hint-color);
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             display: flex;
             align-items: center;
             justify-content: space-between;
+            cursor: pointer;
         }
         
-        .list-item:last-child {
-            border-bottom: none;
+        .list-item:hover {
+            background: #f0f7ff;
         }
         
-        /* Footer */
-        .footer {
+        .item-number {
+            background: var(--primary-color);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        
+        .item-content {
+            flex: 1;
+        }
+        
+        .item-title {
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+        
+        .item-desc {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        /* Loading animatsiya */
+        .loader {
+            display: none;
             text-align: center;
             padding: 20px;
-            color: var(--tg-theme-hint-color);
-            font-size: 14px;
-            margin-top: 20px;
         }
         
-        /* Responsive design */
-        @media (min-width: 600px) {
-            .container {
-                max-width: 500px;
-                padding: 20px;
-            }
-        }
-        
-        /* Loading animatsiyasi */
-        .loader {
-            border: 3px solid var(--tg-theme-secondary-bg-color);
-            border-top: 3px solid var(--tg-theme-button-color);
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary-color);
             border-radius: 50%;
             width: 40px;
             height: 40px;
             animation: spin 1s linear infinite;
-            margin: 20px auto;
+            margin: 0 auto 15px;
         }
         
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
+        /* Responsive */
+        @media (max-width: 360px) {
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Qur'on o'qiydigan qism */
+        .verse-container {
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+        }
+        
+        .arabic-text {
+            font-size: 24px;
+            font-family: 'Traditional Arabic', 'Arial', sans-serif;
+            direction: rtl;
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+        
+        .translation {
+            font-size: 16px;
+            color: #444;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+        
+        .verse-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #666;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
     </style>
 </head>
 <body>
     <!-- Header -->
     <div class="header">
-        <h1 id="app-title">📱 My WebApp</h1>
+        <h1>📖 Diniy Bilimlar</h1>
+        <p>Quroni karim, Hadis, Tafsir va Siyrat</p>
     </div>
     
-    <!-- Asosiy kontent -->
-    <div class="container">
-        <!-- User info card -->
-        <div class="card" id="user-card">
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <div style="
-                    width: 50px;
-                    height: 50px;
-                    background: var(--tg-theme-button-color);
-                    border-radius: 50%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    color: white;
-                    font-weight: bold;
-                    font-size: 20px;
-                " id="user-avatar">U</div>
-                <div>
-                    <h3 id="user-name">Foydalanuvchi</h3>
-                    <p id="user-id" style="color: var(--tg-theme-hint-color); font-size: 14px;">
-                        ID: Yuklanmoqda...
-                    </p>
-                </div>
-            </div>
-        </div>
+    <!-- Asosiy bo'limlar -->
+    <div class="main-sections">
+        <h2 class="section-title">🎯 Asosiy Bo'limlar</h2>
         
-        <!-- Actions card -->
-        <div class="card">
-            <h3 style="margin-bottom: 16px;">🏃‍♂️ Tezkor Harakatlar</h3>
-            
-            <button class="btn" onclick="showAlert()">
-                🔔 Bildirishnoma ko'rsatish
-            </button>
-            
-            <button class="btn" onclick="toggleTheme()">
-                🌗 Mavzuni o'zgartirish
-            </button>
-            
-            <button class="btn btn-secondary" onclick="sendDataToBot()">
-                📤 Botga ma'lumot yuborish
-            </button>
-        </div>
-        
-        <!-- Input card -->
-        <div class="card">
-            <h3 style="margin-bottom: 16px;">📝 Ma'lumot kiriting</h3>
-            
-            <div class="input-group">
-                <label class="input-label">Ismingiz</label>
-                <input type="text" class="input-field" id="user-input" 
-                       placeholder="Ismingizni kiriting...">
+        <div class="feature-grid">
+            <!-- Qur'on bo'limi -->
+            <div class="feature-card" onclick="openSection('quran')">
+                <div class="card-icon">🕋</div>
+                <h3 class="card-title">Quroni Karim</h3>
+                <p class="card-desc">Muqaddas Quroni Karim matni, tarjimasi va o'qilishi</p>
+                <span class="category-tag">Asosiy manba</span>
             </div>
             
-            <button class="btn" onclick="processInput()">
-                ✅ Tasdiqlash
-            </button>
-        </div>
-        
-        <!-- Results card -->
-        <div class="card">
-            <h3 style="margin-bottom: 16px;">📊 Natijalar</h3>
-            <div id="results" style="min-height: 100px; padding: 12px;">
-                Bu yerda natijalar ko'rinadi...
+            <!-- Hadis bo'limi -->
+            <div class="feature-card" onclick="openSection('hadis')">
+                <div class="card-icon">📜</div>
+                <h3 class="card-title">Hadisi Sharif</h3>
+                <p class="card-desc">Payg'ambarimiz (s.a.v) hadislari va sharhlari</p>
+                <span class="category-tag">Ikkinchi manba</span>
             </div>
-        </div>
-        
-        <!-- List example -->
-        <div class="card">
-            <h3 style="margin-bottom: 16px;">📋 Elementlar ro'yxati</h3>
-            <ul class="list">
-                <li class="list-item">
-                    <span>✅ Vazifa 1</span>
-                    <span style="color: var(--tg-theme-hint-color);">Bajarildi</span>
-                </li>
-                <li class="list-item">
-                    <span>🔧 Vazifa 2</span>
-                    <span style="color: var(--tg-theme-hint-color);">Jarayonda</span>
-                </li>
-                <li class="list-item">
-                    <span>⏳ Vazifa 3</span>
-                    <span style="color: var(--tg-theme-hint-color);">Kutilmoqda</span>
-                </li>
-            </ul>
+            
+            <!-- Tafsir bo'limi -->
+            <div class="feature-card" onclick="openSection('tafsir')">
+                <div class="card-icon">🔍</div>
+                <h3 class="card-title">Tafsir Ilmi</h3>
+                <p class="card-desc">Qur'on oyatlarining tafsiri va izohlari</p>
+                <span class="category-tag">Tushuntirish</span>
+            </div>
+            
+            <!-- Siyrat bo'limi -->
+            <div class="feature-card" onclick="openSection('siyrat')">
+                <div class="card-icon">🌙</div>
+                <h3 class="card-title">Siyrat</h3>
+                <p class="card-desc">Payg'ambarimiz (s.a.v) hayoti va faoliyati</p>
+                <span class="category-tag">Tarixiy ma'lumot</span>
+            </div>
         </div>
     </div>
     
-    <!-- Footer -->
-    <div class="footer">
-        <p>© 2024 My Telegram WebApp</p>
-        <p style="font-size: 12px; margin-top: 8px;">
-            Telegram WebApp API • Version 1.0
-        </p>
+    <!-- Kontent maydoni (dynamically yangilanadi) -->
+    <div class="content-area" id="contentArea">
+        <h2 class="content-title">🤲 Xush kelibsiz!</h2>
+        <p>Yuqoridagi bo'limlardan birini tanlang yoki pastki menyudan foydalaning.</p>
+        
+        <!-- Namuna: Qur'on oyati -->
+        <div class="verse-container" style="display: none;" id="sampleVerse">
+            <div class="arabic-text">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+            <div class="translation">Mehribon va rahmli Alloh nomi bilan (boshyapman).</div>
+            <div class="verse-info">
+                <span>Sura: Fotiha</span>
+                <span>Oyat: 1</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Loading -->
+    <div class="loader" id="loader">
+        <div class="spinner"></div>
+        <p>Yuklanmoqda...</p>
+    </div>
+    
+    <!-- Pastki menyu -->
+    <div class="bottom-nav">
+        <a href="#" class="nav-item active" onclick="showSection('main')">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-text">Asosiy</div>
+        </a>
+        
+        <a href="#" class="nav-item" onclick="showSection('lessons')">
+            <div class="nav-icon">📚</div>
+            <div class="nav-text">Darslar</div>
+        </a>
+        
+        <a href="#" class="nav-item" onclick="showSection('bookmarks')">
+            <div class="nav-icon">🔖</div>
+            <div class="nav-text">Belgilar</div>
+        </a>
+        
+        <a href="#" class="nav-item" onclick="showSection('search')">
+            <div class="nav-icon">🔍</div>
+            <div class="nav-text">Qidirish</div>
+        </a>
+        
+        <a href="#" class="nav-item" onclick="showSection('profile')">
+            <div class="nav-icon">👤</div>
+            <div class="nav-text">Profilim</div>
+        </a>
     </div>
 
     <script>
@@ -287,140 +383,276 @@
         const tg = window.Telegram.WebApp;
         
         // WebApp ni ishga tushirish
-        tg.expand(); // To'liq ekran
-        tg.enableClosingConfirmation(); // Yopishni tasdiqlash
+        tg.expand();
+        tg.enableClosingConfirmation();
         
         // Foydalanuvchi ma'lumotlari
         const user = tg.initDataUnsafe.user;
         
-        // Sahifani to'ldirish
+        // DOM yuklanganda
         document.addEventListener('DOMContentLoaded', function() {
             if (user) {
-                // Foydalanuvchi ma'lumotlari
-                document.getElementById('user-name').textContent = 
-                    `${user.first_name} ${user.last_name || ''}`;
-                document.getElementById('user-id').textContent = 
-                    `ID: ${user.id} | @${user.username || 'foydalanuvchi'}`;
-                document.getElementById('user-avatar').textContent = 
-                    user.first_name[0].toUpperCase();
-                
-                // App sarlavhasini yangilash
-                document.getElementById('app-title').textContent = 
-                    `👋 Salom, ${user.first_name}!`;
+                // Foydalanuvchi nomini header'ga qo'shish
+                document.querySelector('.header h1').innerHTML = 
+                    `📖 Salom, ${user.first_name}!`;
             }
             
-            // Telegram rang mavzusini qo'llash
-            applyThemeColors();
+            // Dastlabki kontentni ko'rsatish
+            showMainContent();
+            
+            // Telegram mavzu ranglarini qo'llash
+            applyTheme();
         });
         
-        // Telegram ranglarini qo'llash
-        function applyThemeColors() {
-            document.body.style.backgroundColor = tg.themeParams.bg_color || '#ffffff';
-            document.body.style.color = tg.themeParams.text_color || '#000000';
-            
-            // Barcha .card elementlari
-            document.querySelectorAll('.card').forEach(card => {
-                card.style.backgroundColor = tg.themeParams.secondary_bg_color || '#f1f1f1';
-            });
-            
-            // Barcha .btn elementlari
-            document.querySelectorAll('.btn').forEach(btn => {
-                if (!btn.classList.contains('btn-secondary')) {
-                    btn.style.backgroundColor = tg.themeParams.button_color || '#2481cc';
-                    btn.style.color = tg.themeParams.button_text_color || '#ffffff';
-                }
-            });
-        }
-        
-        // Tugma funksiyalari
-        function showAlert() {
-            tg.showAlert("✅ Bu Telegram WebApp bildirishnomasi!");
-            tg.HapticFeedback.impactOccurred('medium');
-        }
-        
-        function toggleTheme() {
-            const isDark = document.body.style.backgroundColor === 'rgb(15, 15, 15)' || 
-                          tg.colorScheme === 'dark';
-            
-            if (isDark) {
-                tg.setHeaderColor('#ffffff');
-                tg.setBackgroundColor('#ffffff');
-            } else {
-                tg.setHeaderColor('#1a1a1a');
-                tg.setBackgroundColor('#1a1a1a');
-            }
-            
-            tg.HapticFeedback.selectionChanged();
-        }
-        
-        function sendDataToBot() {
-            const data = {
-                action: 'user_action',
-                user_id: user ? user.id : 'anonymous',
-                timestamp: new Date().toISOString(),
-                input_value: document.getElementById('user-input').value || 'empty'
-            };
-            
-            tg.sendData(JSON.stringify(data));
-            tg.showAlert("📤 Ma'lumot botga yuborildi!");
-            tg.HapticFeedback.notificationOccurred('success');
-        }
-        
-        function processInput() {
-            const input = document.getElementById('user-input').value;
-            const resultsDiv = document.getElementById('results');
-            
-            if (!input.trim()) {
-                resultsDiv.innerHTML = `
-                    <div style="color: #ff6b6b; padding: 10px; background: rgba(255,107,107,0.1); border-radius: 8px;">
-                        ⚠️ Iltimos, ma'lumot kiriting!
+        // Asosiy kontent
+        function showMainContent() {
+            const content = document.getElementById('contentArea');
+            content.innerHTML = `
+                <h2 class="content-title">🤲 Xush kelibsiz!</h2>
+                <p>Bu Diniy Bilimlar platformasiga xush kelibsiz. Quyidagi imkoniyatlar mavjud:</p>
+                
+                <div style="margin-top: 20px;">
+                    <div class="list-item">
+                        <div class="item-number">1</div>
+                        <div class="item-content">
+                            <div class="item-title">Quroni Karim</div>
+                            <div class="item-desc">114 sura, 6236 oyat</div>
+                        </div>
                     </div>
-                `;
-                tg.HapticFeedback.impactOccurred('heavy');
-                return;
-            }
-            
-            resultsDiv.innerHTML = `
-                <div style="color: #51cf66; padding: 10px; background: rgba(81,207,102,0.1); border-radius: 8px;">
-                    ✅ <strong>Qabul qilindi:</strong> ${input}
-                </div>
-                <div style="margin-top: 10px; padding: 10px; background: var(--tg-theme-secondary-bg-color); border-radius: 8px;">
-                    📊 <strong>Tahlil:</strong><br>
-                    • Uzunlik: ${input.length} belgi<br>
-                    • So'zlar: ${input.split(' ').filter(w => w).length}<br>
-                    • Vaqt: ${new Date().toLocaleTimeString()}
+                    
+                    <div class="list-item">
+                        <div class="item-number">2</div>
+                        <div class="item-content">
+                            <div class="item-title">Hadisi Sharif</div>
+                            <div class="item-desc">Sahih hadislar to'plami</div>
+                        </div>
+                    </div>
+                    
+                    <div class="list-item">
+                        <div class="item-number">3</div>
+                        <div class="item-content">
+                            <div class="item-title">Kundalik dars</div>
+                            <div class="item-desc">Har kungi o'qish uchun oyat</div>
+                        </div>
+                    </div>
                 </div>
             `;
             
-            tg.HapticFeedback.impactOccurred('light');
+            // Pastki menyuni faollashtirish
+            setActiveNav('main');
         }
         
-        // Orqaga tugmasi
-        tg.BackButton.show();
-        tg.BackButton.onClick(() => {
-            tg.showConfirm("Chiqishni istaysizmi?", (confirmed) => {
-                if (confirmed) {
-                    tg.close();
+        // Bo'limlarni ochish
+        function openSection(section) {
+            showLoader(true);
+            
+            setTimeout(() => {
+                showLoader(false);
+                
+                let content = '';
+                let title = '';
+                
+                switch(section) {
+                    case 'quran':
+                        title = '📖 Quroni Karim';
+                        content = getQuranContent();
+                        setActiveNav('lessons');
+                        break;
+                        
+                    case 'hadis':
+                        title = '📜 Hadisi Sharif';
+                        content = getHadisContent();
+                        setActiveNav('lessons');
+                        break;
+                        
+                    case 'tafsir':
+                        title = '🔍 Tafsir Ilmi';
+                        content = getTafsirContent();
+                        setActiveNav('lessons');
+                        break;
+                        
+                    case 'siyrat':
+                        title = '🌙 Siyrat';
+                        content = getSiyratContent();
+                        setActiveNav('lessons');
+                        break;
+                }
+                
+                document.getElementById('contentArea').innerHTML = `
+                    <h2 class="content-title">${title}</h2>
+                    ${content}
+                `;
+                
+                // Vibratsiya
+                tg.HapticFeedback.impactOccurred('light');
+            }, 500);
+        }
+        
+        // Qur'on kontenti
+        function getQuranContent() {
+            return `
+                <div class="verse-container">
+                    <div class="arabic-text">الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ</div>
+                    <div class="translation">Hamd olamlar rabbi Allohgadir.</div>
+                    <div class="verse-info">
+                        <span>Sura: Fotiha</span>
+                        <span>Oyat: 2</span>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin: 20px 0;">
+                    <button class="feature-card" style="display: inline-block; width: auto; padding: 12px 24px;" 
+                            onclick="showNextVerse()">
+                        Keyingi oyat
+                    </button>
+                </div>
+                
+                <h3 style="margin: 20px 0 10px; color: var(--primary-color);">Suralar ro'yxati</h3>
+                <div id="suraList"></div>
+            `;
+        }
+        
+        // Hadis kontenti
+        function getHadisContent() {
+            return `
+                <div class="list-item" onclick="showHadisDetail(1)">
+                    <div class="item-content">
+                        <div class="item-title">"Kimki Alloh va oxirat kuni istasa..."</div>
+                        <div class="item-desc">Sahih al-Buxoriy, 6018</div>
+                    </div>
+                </div>
+                
+                <div class="list-item" onclick="showHadisDetail(2)">
+                    <div class="item-content">
+                        <div class="item-title">"Insonlar qiyomat kuni o'z amallaridan..."</div>
+                        <div class="item-desc">Sahih Muslim, 2564</div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Pastki menyu bo'limlari
+        function showSection(section) {
+            showLoader(true);
+            
+            setTimeout(() => {
+                showLoader(false);
+                
+                let content = '';
+                let title = '';
+                
+                switch(section) {
+                    case 'main':
+                        showMainContent();
+                        return;
+                        
+                    case 'lessons':
+                        title = '📚 Darslar';
+                        content = `<p>Kundalik darslar va o'qish rejalari...</p>`;
+                        break;
+                        
+                    case 'bookmarks':
+                        title = '🔖 Belgilar';
+                        content = `<p>Saqlangan oyatlar va hadislar...</p>`;
+                        break;
+                        
+                    case 'search':
+                        title = '🔍 Qidirish';
+                        content = `
+                            <input type="text" placeholder="Qidirish..." style="
+                                width: 100%;
+                                padding: 15px;
+                                border: 2px solid var(--primary-color);
+                                border-radius: 10px;
+                                font-size: 16px;
+                                margin-bottom: 15px;
+                            ">
+                            <button class="feature-card" style="width: 100%;">Qidirish</button>
+                        `;
+                        break;
+                        
+                    case 'profile':
+                        title = '👤 Profilim';
+                        content = `
+                            <div style="text-align: center; padding: 20px;">
+                                <div style="
+                                    width: 80px;
+                                    height: 80px;
+                                    background: var(--primary-color);
+                                    border-radius: 50%;
+                                    margin: 0 auto 15px;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    color: white;
+                                    font-size: 32px;
+                                    font-weight: bold;
+                                ">
+                                    ${user ? user.first_name[0].toUpperCase() : 'U'}
+                                </div>
+                                <h3>${user ? user.first_name : 'Foydalanuvchi'}</h3>
+                                <p style="color: #666; margin-top: 10px;">
+                                    O'qilgan oyatlar: 15<br>
+                                    Belgilar: 7<br>
+                                    Ketma-ket kunlar: 3
+                                </p>
+                            </div>
+                        `;
+                        break;
+                }
+                
+                document.getElementById('contentArea').innerHTML = `
+                    <h2 class="content-title">${title}</h2>
+                    ${content}
+                `;
+                
+                setActiveNav(section);
+                tg.HapticFeedback.selectionChanged();
+            }, 300);
+        }
+        
+        // Pastki menyuni faollashtirish
+        function setActiveNav(activeItem) {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.nav-item').forEach(item => {
+                if (item.onclick && item.onclick.toString().includes(`'${activeItem}'`)) {
+                    item.classList.add('active');
                 }
             });
-        });
+        }
         
-        // Asosiy tugma
-        tg.MainButton.text = "💾 Saqlash";
-        tg.MainButton.show();
-        tg.MainButton.onClick(() => {
-            sendDataToBot();
-        });
+        // Loaderni ko'rsatish/yashirish
+        function showLoader(show) {
+            document.getElementById('loader').style.display = show ? 'block' : 'none';
+        }
+        
+        // Mavzuni sozlash
+        function applyTheme() {
+            if (tg.colorScheme === 'dark') {
+                document.body.style.background = '#1a1a1a';
+                document.body.style.color = '#ffffff';
+            }
+        }
+        
+        // Botga ma'lumot yuborish
+        function saveBookmark(type, content) {
+            tg.sendData(JSON.stringify({
+                action: 'save_bookmark',
+                type: type,
+                content: content,
+                user_id: user ? user.id : 'anonymous'
+            }));
+            
+            tg.showAlert("✅ Belgilangan!");
+        }
         
         // WebApp tayyor
         tg.ready();
-        console.log('Telegram WebApp ishga tushdi!');
         
-        // Telegram o'zgarishlarini kuzatish
-        tg.onEvent('themeChanged', applyThemeColors);
-        tg.onEvent('viewportChanged', () => {
-            console.log('Viewport o\'zgardi:', tg.viewportHeight);
-        });
+        console.log("Diniy WebApp ishga tushdi!");
     </script>
 </body>
 </html>
