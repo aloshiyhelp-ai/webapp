@@ -83,5 +83,19 @@
         // Telegram WebApp global o'zgaruvchisi
         window.TelegramWebApp = window.Telegram.WebApp;
     </script>
+    <script>
+    // Test script
+    console.log("✅ HTML yuklandi!");
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log("✅ DOM tayyor!");
+        
+        // Telegram WebApp ni tekshirish
+        if (window.Telegram && Telegram.WebApp) {
+            console.log("✅ Telegram WebApp mavjud!");
+        } else {
+            console.warn("⚠️ Telegram WebApp topilmadi!");
+        }
+    });
+</script>
 </body>
 </html>
