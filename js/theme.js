@@ -1,10 +1,11 @@
 // Theme Management
 class ThemeManager {
     constructor() {
-        this.theme = localStorage.getItem('theme') || 'light';
+        // DARK ni default qilish
+        this.theme = localStorage.getItem('theme') || 'dark'; // ← DARK
         this.themeStyle = document.getElementById('theme-style');
         this.themeToggle = document.getElementById('themeToggle');
-        this.themeIcon = document.querySelector('.theme-icon');
+        this.themeIcon = this.themeToggle?.querySelector('.theme-icon');
         
         this.init();
     }
@@ -14,7 +15,9 @@ class ThemeManager {
         this.applyTheme();
         
         // Tugma hodisasi
-        this.themeToggle.addEventListener('click', () => this.toggleTheme());
+        if (this.themeToggle) {
+            this.themeToggle.addEventListener('click', () => this.toggleTheme());
+        }
         
         // System theme o'zgarishini kuzatish
         if (window.matchMedia) {
@@ -36,10 +39,14 @@ class ThemeManager {
     
     applyTheme() {
         // CSS faylini o'zgartirish
-        this.themeStyle.href = `/media/style/css/${this.theme}.css`;
+        if (this.themeStyle) {
+            this.themeStyle.href = `/media/style/css/${this.theme}.css`;
+        }
         
-        // Ikonkani o'zgartirish
-        this.themeIcon.textContent = this.theme === 'dark' ? '☀️' : '🌙';
+        // Ikonkani o'zgartirish (agar mavjud bo'lsa)
+        if (this.themeIcon) {
+            this.themeIcon.textContent = this.theme === 'dark' ? '☀️' : '🌙';
+        }
         
         // Body class qo'shish
         document.body.classList.remove('theme-light', 'theme-dark');
@@ -104,19 +111,21 @@ class ThemeManager {
 window.themeManager = new ThemeManager();
 
 // Tezkor funktsiyalar
-function toggleTheme() {
-    window.themeManager.toggleTheme();
-}
+window.toggleTheme = function() {
+    window.themeManager?.toggleTheme();
+};
 
-function setTheme(theme) {
-    window.themeManager.setTheme(theme);
-}
+window.setTheme = function(theme) {
+    window.themeManager?.setTheme(theme);
+};
 
-function getTheme() {
-    return window.themeManager.getCurrentTheme();
-}
+window.getTheme = function() {
+    return window.themeManager?.getCurrentTheme();
+};
 
-// Eksport qilish (agar module bo'lsa)
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { ThemeManager, toggleTheme, setTheme, getTheme };
-}
+// DOM yuklanganda tekshirish
+document.addEventListener('DOMContentLoaded', function() {
+    if (!window.themeManager) {
+        window.themeManager = new ThemeManager();
+    }
+});
