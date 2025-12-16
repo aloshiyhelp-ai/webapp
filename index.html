@@ -10,15 +10,16 @@
     
     <!-- CSS fayllari -->
     <link rel="stylesheet" href="/media/style/css/style.css">
-    <link rel="stylesheet" href="/media/style/css/dark.css" id="theme-style">
+    <!-- Tema dinamik yuklanadi (theme.js tomonidan) -->
+    <link rel="stylesheet" href="" id="theme-style">
     
     <!-- Favicon -->
-    <link rel="icon" href="/media/images/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/media/images/favicon.svg" type="image/svg+xml">
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="theme-dark"> <!-- Default dark class -->
     <!-- Header -->
     <header class="header" id="header">
         <div class="header-content">
@@ -28,7 +29,7 @@
         
         <!-- Mavzu o'zgartirish tugmasi -->
         <button class="theme-toggle" id="themeToggle" aria-label="Mavzuni o'zgartirish">
-            <span class="theme-icon">🌙</span>
+            <span class="theme-icon">☀️</span> <!-- Avvalgi tema bo'yicha -->
         </button>
     </header>
     
@@ -73,40 +74,26 @@
     </nav>
     
     <!-- JavaScript fayllari -->
-    <script src="/js/theme.js" defer></script>
-    <script src="/js/app.js" defer></script>
-    <script src="/js/quran.js" defer></script>
-    <script src="/js/hadis.js" defer></script>
+    <!-- 1. Avval theme.js (tema boshqaruvi) -->
+    <script src="/js/theme.js"></script>
+    <!-- 2. Keyin boshqa fayllar -->
+    <script src="/js/app.js"></script>
+    <script src="/js/quran.js"></script>
+    <script src="/js/hadis.js"></script>
     
     <!-- Telegram WebApp skripti -->
     <script>
         // Telegram WebApp global o'zgaruvchisi
         window.TelegramWebApp = window.Telegram.WebApp;
-    </script>
-    <script>
-    // Test script
-    console.log("✅ HTML yuklandi!");
-    document.addEventListener('DOMContentLoaded', () => {
-        console.log("✅ DOM tayyor!");
         
-        // Telegram WebApp ni tekshirish
-        if (window.Telegram && Telegram.WebApp) {
-            console.log("✅ Telegram WebApp mavjud!");
-        } else {
-            console.warn("⚠️ Telegram WebApp topilmadi!");
-        }
-    });
-</script>
-<script>
-    // DOM yuklanishidan oldin dark theme o'rnatish
-    (function() {
-        const savedTheme = localStorage.getItem('theme') || 'dark'; // ← DARK DEFAULT
-        const link = document.createElement('link');
-        link.id = 'theme-style';
-        link.rel = 'stylesheet';
-        link.href = `/media/style/css/${savedTheme}.css`;
-        document.head.appendChild(link);
-    })();
-</script>
+        // Sayt yuklanganda tema tekshirish
+        window.addEventListener('load', function() {
+            // Agar tema yo'q bo'lsa, default dark
+            if (!localStorage.getItem('diniy_theme')) {
+                console.log('🌙 Default dark tema o\'rnatildi');
+                localStorage.setItem('diniy_theme', 'dark');
+            }
+        });
+    </script>
 </body>
 </html>
