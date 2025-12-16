@@ -3,656 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diniy Bilim - WebApp</title>
+    <title>Diniy Bilim - Telegram WebApp</title>
+    
+    <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', 'Arial', sans-serif;
-        }
-        
-        :root {
-            --primary-color: #2c5aa0;
-            --secondary-color: #4a90e2;
-            --accent-color: #d4a017;
-            --text-color: #333;
-            --light-bg: #f8f9fa;
-            --card-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-        
-        body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
-            color: var(--text-color);
-            padding-bottom: 70px; /* Pastki menyu uchun joy */
-        }
-        
-        /* Header */
-        .header {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 20px 16px;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .header h1 {
-            font-size: 22px;
-            margin-bottom: 5px;
-        }
-        
-        .header p {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-        
-        /* Asosiy bo'limlar */
-        .main-sections {
-            padding: 20px 16px;
-        }
-        
-        .section-title {
-            font-size: 18px;
-            margin-bottom: 15px;
-            color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .section-title i {
-            font-size: 20px;
-        }
-        
-        /* Katta kartalar - 2x2 tartibda */
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-        
-        .feature-card {
-            background: white;
-            border-radius: 16px;
-            padding: 20px 15px;
-            text-align: center;
-            box-shadow: var(--card-shadow);
-            transition: transform 0.3s, box-shadow 0.3s;
-            border: 2px solid transparent;
-            cursor: pointer;
-        }
-        
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-            border-color: var(--accent-color);
-        }
-        
-        .card-icon {
-            font-size: 32px;
-            margin-bottom: 12px;
-            color: var(--primary-color);
-        }
-        
-        .card-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-        
-        .card-desc {
-            font-size: 12px;
-            color: #666;
-            line-height: 1.4;
-        }
-        
-        /* Tasnif yozuvi */
-        .category-tag {
-            display: inline-block;
-            background: rgba(44, 90, 160, 0.1);
-            color: var(--primary-color);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            margin-top: 10px;
-            font-weight: 500;
-        }
-        
-        /* Pastki menyu */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            display: flex;
-            justify-content: space-around;
-            padding: 12px 0;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
-            z-index: 1000;
-        }
-        
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            color: #888;
-            transition: color 0.3s;
-            flex: 1;
-            padding: 5px 0;
-        }
-        
-        .nav-item.active {
-            color: var(--primary-color);
-        }
-        
-        .nav-icon {
-            font-size: 22px;
-            margin-bottom: 4px;
-        }
-        
-        .nav-text {
-            font-size: 11px;
-            font-weight: 500;
-        }
-        
-        /* Kontent maydoni */
-        .content-area {
-            padding: 20px 16px;
-            min-height: 300px;
-        }
-        
-        .content-title {
-            font-size: 20px;
-            color: var(--primary-color);
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--accent-color);
-        }
-        
-        /* Sura/Hadis ro'yxati */
-        .list-item {
-            background: white;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-        }
-        
-        .list-item:hover {
-            background: #f0f7ff;
-        }
-        
-        .item-number {
-            background: var(--primary-color);
-            color: white;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            margin-right: 15px;
-        }
-        
-        .item-content {
-            flex: 1;
-        }
-        
-        .item-title {
-            font-weight: 600;
-            margin-bottom: 3px;
-        }
-        
-        .item-desc {
-            font-size: 13px;
-            color: #666;
-        }
-        
-        /* Loading animatsiya */
-        .loader {
-            display: none;
-            text-align: center;
-            padding: 20px;
-        }
-        
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--primary-color);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* Responsive */
-        @media (max-width: 360px) {
-            .feature-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        /* Qur'on o'qiydigan qism */
-        .verse-container {
-            background: white;
-            padding: 20px;
-            border-radius: 16px;
-            margin-bottom: 20px;
-            box-shadow: var(--card-shadow);
-            text-align: center;
-        }
-        
-        .arabic-text {
-            font-size: 24px;
-            font-family: 'Traditional Arabic', 'Arial', sans-serif;
-            direction: rtl;
-            margin-bottom: 15px;
-            line-height: 1.8;
-        }
-        
-        .translation {
-            font-size: 16px;
-            color: #444;
-            line-height: 1.6;
-            margin-bottom: 15px;
-            font-style: italic;
-        }
-        
-        .verse-info {
-            display: flex;
-            justify-content: space-between;
-            font-size: 14px;
-            color: #666;
-            padding-top: 15px;
-            border-top: 1px solid #eee;
-        }
-    </style>
+    
+    <!-- CSS fayllari -->
+    <link rel="stylesheet" href="/media/style/css/style.css">
+    <link rel="stylesheet" href="/media/style/css/light.css" id="theme-style">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
     <!-- Header -->
-    <div class="header">
-        <h1>📖 Diniy Bilimlar</h1>
-        <p>Quroni karim, Hadis, Tafsir va Siyrat</p>
-    </div>
+    <header class="header" id="header">
+        <div class="header-content">
+            <h1 id="app-title">📖 Diniy Bilimlar</h1>
+            <p id="app-subtitle">Quroni karim, Hadis, Tafsir va Siyrat</p>
+        </div>
+        
+        <!-- Mavzu o'zgartirish tugmasi -->
+        <button class="theme-toggle" id="themeToggle" aria-label="Mavzuni o'zgartirish">
+            <span class="theme-icon">🌙</span>
+        </button>
+    </header>
     
     <!-- Asosiy bo'limlar -->
-    <div class="main-sections">
-        <h2 class="section-title">🎯 Asosiy Bo'limlar</h2>
+    <main class="main-container">
+        <section class="main-sections">
+            <h2 class="section-title">🎯 Asosiy Bo'limlar</h2>
+            
+            <div class="feature-grid" id="featureGrid">
+                <!-- Kartalar JavaScript orqali yuklanadi -->
+            </div>
+        </section>
         
-        <div class="feature-grid">
-            <!-- Qur'on bo'limi -->
-            <div class="feature-card" onclick="openSection('quran')">
-                <div class="card-icon">🕋</div>
-                <h3 class="card-title">Quroni Karim</h3>
-                <p class="card-desc">Muqaddas Quroni Karim matni, tarjimasi va o'qilishi</p>
-                <span class="category-tag">Asosiy manba</span>
+        <!-- Kontent maydoni -->
+        <section class="content-area" id="contentArea">
+            <div class="welcome-message">
+                <h2 class="content-title">🤲 Xush kelibsiz!</h2>
+                <p>Yuqoridagi bo'limlardan birini tanlang yoki pastki menyudan foydalaning.</p>
+                
+                <!-- Namuna oyat -->
+                <div class="verse-container" id="sampleVerse">
+                    <div class="arabic-text">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+                    <div class="translation">Mehribon va rahmli Alloh nomi bilan (boshyapman).</div>
+                    <div class="verse-info">
+                        <span>Sura: Fotiha</span>
+                        <span>Oyat: 1</span>
+                    </div>
+                </div>
             </div>
-            
-            <!-- Hadis bo'limi -->
-            <div class="feature-card" onclick="openSection('hadis')">
-                <div class="card-icon">📜</div>
-                <h3 class="card-title">Hadisi Sharif</h3>
-                <p class="card-desc">Payg'ambarimiz (s.a.v) hadislari va sharhlari</p>
-                <span class="category-tag">Ikkinchi manba</span>
-            </div>
-            
-            <!-- Tafsir bo'limi -->
-            <div class="feature-card" onclick="openSection('tafsir')">
-                <div class="card-icon">🔍</div>
-                <h3 class="card-title">Tafsir Ilmi</h3>
-                <p class="card-desc">Qur'on oyatlarining tafsiri va izohlari</p>
-                <span class="category-tag">Tushuntirish</span>
-            </div>
-            
-            <!-- Siyrat bo'limi -->
-            <div class="feature-card" onclick="openSection('siyrat')">
-                <div class="card-icon">🌙</div>
-                <h3 class="card-title">Siyrat</h3>
-                <p class="card-desc">Payg'ambarimiz (s.a.v) hayoti va faoliyati</p>
-                <span class="category-tag">Tarixiy ma'lumot</span>
-            </div>
-        </div>
-    </div>
+        </section>
+    </main>
     
-    <!-- Kontent maydoni (dynamically yangilanadi) -->
-    <div class="content-area" id="contentArea">
-        <h2 class="content-title">🤲 Xush kelibsiz!</h2>
-        <p>Yuqoridagi bo'limlardan birini tanlang yoki pastki menyudan foydalaning.</p>
-        
-        <!-- Namuna: Qur'on oyati -->
-        <div class="verse-container" style="display: none;" id="sampleVerse">
-            <div class="arabic-text">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
-            <div class="translation">Mehribon va rahmli Alloh nomi bilan (boshyapman).</div>
-            <div class="verse-info">
-                <span>Sura: Fotiha</span>
-                <span>Oyat: 1</span>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Loading -->
+    <!-- Loading indikatori -->
     <div class="loader" id="loader">
         <div class="spinner"></div>
         <p>Yuklanmoqda...</p>
     </div>
     
     <!-- Pastki menyu -->
-    <div class="bottom-nav">
-        <a href="#" class="nav-item active" onclick="showSection('main')">
-            <div class="nav-icon">🏠</div>
-            <div class="nav-text">Asosiy</div>
-        </a>
-        
-        <a href="#" class="nav-item" onclick="showSection('lessons')">
-            <div class="nav-icon">📚</div>
-            <div class="nav-text">Darslar</div>
-        </a>
-        
-        <a href="#" class="nav-item" onclick="showSection('bookmarks')">
-            <div class="nav-icon">🔖</div>
-            <div class="nav-text">Belgilar</div>
-        </a>
-        
-        <a href="#" class="nav-item" onclick="showSection('search')">
-            <div class="nav-icon">🔍</div>
-            <div class="nav-text">Qidirish</div>
-        </a>
-        
-        <a href="#" class="nav-item" onclick="showSection('profile')">
-            <div class="nav-icon">👤</div>
-            <div class="nav-text">Profilim</div>
-        </a>
-    </div>
-
+    <nav class="bottom-nav" id="bottomNav">
+        <!-- JavaScript orqali yuklanadi -->
+    </nav>
+    
+    <!-- JavaScript fayllari -->
+    <script src="/js/theme.js" defer></script>
+    <script src="/js/app.js" defer></script>
+    <script src="/js/quran.js" defer></script>
+    <script src="/js/hadis.js" defer></script>
+    
+    <!-- Telegram WebApp skripti -->
     <script>
-        // Telegram WebApp obyekti
-        const tg = window.Telegram.WebApp;
-        
-        // WebApp ni ishga tushirish
-        tg.expand();
-        tg.enableClosingConfirmation();
-        
-        // Foydalanuvchi ma'lumotlari
-        const user = tg.initDataUnsafe.user;
-        
-        // DOM yuklanganda
-        document.addEventListener('DOMContentLoaded', function() {
-            if (user) {
-                // Foydalanuvchi nomini header'ga qo'shish
-                document.querySelector('.header h1').innerHTML = 
-                    `📖 Salom, ${user.first_name}!`;
-            }
-            
-            // Dastlabki kontentni ko'rsatish
-            showMainContent();
-            
-            // Telegram mavzu ranglarini qo'llash
-            applyTheme();
-        });
-        
-        // Asosiy kontent
-        function showMainContent() {
-            const content = document.getElementById('contentArea');
-            content.innerHTML = `
-                <h2 class="content-title">🤲 Xush kelibsiz!</h2>
-                <p>Bu Diniy Bilimlar platformasiga xush kelibsiz. Quyidagi imkoniyatlar mavjud:</p>
-                
-                <div style="margin-top: 20px;">
-                    <div class="list-item">
-                        <div class="item-number">1</div>
-                        <div class="item-content">
-                            <div class="item-title">Quroni Karim</div>
-                            <div class="item-desc">114 sura, 6236 oyat</div>
-                        </div>
-                    </div>
-                    
-                    <div class="list-item">
-                        <div class="item-number">2</div>
-                        <div class="item-content">
-                            <div class="item-title">Hadisi Sharif</div>
-                            <div class="item-desc">Sahih hadislar to'plami</div>
-                        </div>
-                    </div>
-                    
-                    <div class="list-item">
-                        <div class="item-number">3</div>
-                        <div class="item-content">
-                            <div class="item-title">Kundalik dars</div>
-                            <div class="item-desc">Har kungi o'qish uchun oyat</div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            // Pastki menyuni faollashtirish
-            setActiveNav('main');
-        }
-        
-        // Bo'limlarni ochish
-        function openSection(section) {
-            showLoader(true);
-            
-            setTimeout(() => {
-                showLoader(false);
-                
-                let content = '';
-                let title = '';
-                
-                switch(section) {
-                    case 'quran':
-                        title = '📖 Quroni Karim';
-                        content = getQuranContent();
-                        setActiveNav('lessons');
-                        break;
-                        
-                    case 'hadis':
-                        title = '📜 Hadisi Sharif';
-                        content = getHadisContent();
-                        setActiveNav('lessons');
-                        break;
-                        
-                    case 'tafsir':
-                        title = '🔍 Tafsir Ilmi';
-                        content = getTafsirContent();
-                        setActiveNav('lessons');
-                        break;
-                        
-                    case 'siyrat':
-                        title = '🌙 Siyrat';
-                        content = getSiyratContent();
-                        setActiveNav('lessons');
-                        break;
-                }
-                
-                document.getElementById('contentArea').innerHTML = `
-                    <h2 class="content-title">${title}</h2>
-                    ${content}
-                `;
-                
-                // Vibratsiya
-                tg.HapticFeedback.impactOccurred('light');
-            }, 500);
-        }
-        
-        // Qur'on kontenti
-        function getQuranContent() {
-            return `
-                <div class="verse-container">
-                    <div class="arabic-text">الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ</div>
-                    <div class="translation">Hamd olamlar rabbi Allohgadir.</div>
-                    <div class="verse-info">
-                        <span>Sura: Fotiha</span>
-                        <span>Oyat: 2</span>
-                    </div>
-                </div>
-                
-                <div style="text-align: center; margin: 20px 0;">
-                    <button class="feature-card" style="display: inline-block; width: auto; padding: 12px 24px;" 
-                            onclick="showNextVerse()">
-                        Keyingi oyat
-                    </button>
-                </div>
-                
-                <h3 style="margin: 20px 0 10px; color: var(--primary-color);">Suralar ro'yxati</h3>
-                <div id="suraList"></div>
-            `;
-        }
-        
-        // Hadis kontenti
-        function getHadisContent() {
-            return `
-                <div class="list-item" onclick="showHadisDetail(1)">
-                    <div class="item-content">
-                        <div class="item-title">"Kimki Alloh va oxirat kuni istasa..."</div>
-                        <div class="item-desc">Sahih al-Buxoriy, 6018</div>
-                    </div>
-                </div>
-                
-                <div class="list-item" onclick="showHadisDetail(2)">
-                    <div class="item-content">
-                        <div class="item-title">"Insonlar qiyomat kuni o'z amallaridan..."</div>
-                        <div class="item-desc">Sahih Muslim, 2564</div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        // Pastki menyu bo'limlari
-        function showSection(section) {
-            showLoader(true);
-            
-            setTimeout(() => {
-                showLoader(false);
-                
-                let content = '';
-                let title = '';
-                
-                switch(section) {
-                    case 'main':
-                        showMainContent();
-                        return;
-                        
-                    case 'lessons':
-                        title = '📚 Darslar';
-                        content = `<p>Kundalik darslar va o'qish rejalari...</p>`;
-                        break;
-                        
-                    case 'bookmarks':
-                        title = '🔖 Belgilar';
-                        content = `<p>Saqlangan oyatlar va hadislar...</p>`;
-                        break;
-                        
-                    case 'search':
-                        title = '🔍 Qidirish';
-                        content = `
-                            <input type="text" placeholder="Qidirish..." style="
-                                width: 100%;
-                                padding: 15px;
-                                border: 2px solid var(--primary-color);
-                                border-radius: 10px;
-                                font-size: 16px;
-                                margin-bottom: 15px;
-                            ">
-                            <button class="feature-card" style="width: 100%;">Qidirish</button>
-                        `;
-                        break;
-                        
-                    case 'profile':
-                        title = '👤 Profilim';
-                        content = `
-                            <div style="text-align: center; padding: 20px;">
-                                <div style="
-                                    width: 80px;
-                                    height: 80px;
-                                    background: var(--primary-color);
-                                    border-radius: 50%;
-                                    margin: 0 auto 15px;
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                    color: white;
-                                    font-size: 32px;
-                                    font-weight: bold;
-                                ">
-                                    ${user ? user.first_name[0].toUpperCase() : 'U'}
-                                </div>
-                                <h3>${user ? user.first_name : 'Foydalanuvchi'}</h3>
-                                <p style="color: #666; margin-top: 10px;">
-                                    O'qilgan oyatlar: 15<br>
-                                    Belgilar: 7<br>
-                                    Ketma-ket kunlar: 3
-                                </p>
-                            </div>
-                        `;
-                        break;
-                }
-                
-                document.getElementById('contentArea').innerHTML = `
-                    <h2 class="content-title">${title}</h2>
-                    ${content}
-                `;
-                
-                setActiveNav(section);
-                tg.HapticFeedback.selectionChanged();
-            }, 300);
-        }
-        
-        // Pastki menyuni faollashtirish
-        function setActiveNav(activeItem) {
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            
-            document.querySelectorAll('.nav-item').forEach(item => {
-                if (item.onclick && item.onclick.toString().includes(`'${activeItem}'`)) {
-                    item.classList.add('active');
-                }
-            });
-        }
-        
-        // Loaderni ko'rsatish/yashirish
-        function showLoader(show) {
-            document.getElementById('loader').style.display = show ? 'block' : 'none';
-        }
-        
-        // Mavzuni sozlash
-        function applyTheme() {
-            if (tg.colorScheme === 'dark') {
-                document.body.style.background = '#1a1a1a';
-                document.body.style.color = '#ffffff';
-            }
-        }
-        
-        // Botga ma'lumot yuborish
-        function saveBookmark(type, content) {
-            tg.sendData(JSON.stringify({
-                action: 'save_bookmark',
-                type: type,
-                content: content,
-                user_id: user ? user.id : 'anonymous'
-            }));
-            
-            tg.showAlert("✅ Belgilangan!");
-        }
-        
-        // WebApp tayyor
-        tg.ready();
-        
-        console.log("Diniy WebApp ishga tushdi!");
+        // Telegram WebApp global o'zgaruvchisi
+        window.TelegramWebApp = window.Telegram.WebApp;
     </script>
 </body>
 </html>
