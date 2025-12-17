@@ -1,64 +1,26 @@
-/* KUNDUZGI REJIM - YORQIN MAVZU */
-:root {
-    /* Asosiy ranglar */
-    --primary-color: #2c5aa0;
-    --primary-light: #4a90e2;
-    --primary-dark: #1a3a6e;
-    
-    /* Fon va matn */
-    --bg-color: #ffffff;
-    --text-color: #333333;
-    --text-light: #666666;
-    --text-lighter: #999999;
-    
-    /* Karta va elementlar */
-    --card-bg: #ffffff;
-    --card-shadow: rgba(0, 0, 0, 0.08);
-    --card-border: #eaeaea;
-    
-    /* Bo'limlar */
-    --section-bg: #f8f9fa;
-    --border-color: #dee2e6;
-    
-    /* Header */
-    --header-bg: linear-gradient(135deg, #2c5aa0, #4a90e2);
-    --header-text: #ffffff;
-    
-    /* Pastki menyu */
-    --nav-bg: #ffffff;
-    --nav-border: #eaeaea;
-    --nav-text: #666666;
-    --nav-active: #2c5aa0;
-}
-
+/* light.css - Kunduzgi rejim */
 body {
-    background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+    background-color: #f5f7fa !important;
+    color: #333333 !important;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 .header {
-    background: var(--header-bg);
-    color: var(--header-text);
-}
-
-.bottom-nav {
-    background: var(--nav-bg);
-    border-top-color: var(--nav-border);
-}
-
-.nav-item {
-    color: var(--nav-text);
-}
-
-.nav-item.active {
-    color: var(--nav-active);
+    background: #2c5aa0 !important;
+    color: #ffffff !important;
 }
 
 .feature-card {
-    background: var(--card-bg);
-    border-color: var(--card-border);
+    background: #ffffff !important;
+    color: #333333 !important;
+    border: 1px solid #ddd !important;
+}
+
+.feature-card:hover {
+    background: #f0f7ff !important;
 }
 
 .content-area {
-    background: var(--section-bg);
-    border-color: var(--border-color);
+    background: #ffffff !important;
+    color: #333333 !important;
 }
