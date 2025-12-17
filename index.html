@@ -1,44 +1,53 @@
 <!DOCTYPE html>
-<html>
+<html lang="uz">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Diniy Bilim</title>
-    <!-- CSS -->
+    
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <!-- Main CSS -->
     <link rel="stylesheet" href="/media/style/css/style.css">
-    <link rel="stylesheet" href="/media/style/css/dark.css" id="theme-style">
+    <!-- Dynamic theme CSS (will be loaded by theme.js) -->
+    
+    <!-- Favicon -->
+    <link rel="icon" href="/media/images/favicon.svg" type="image/svg+xml">
 </head>
 <body>
-    <div class="header">
+    <!-- Simple header -->
+    <header style="padding:20px;background:#2c5aa0;color:white;text-align:center;">
         <h1>📖 Diniy Bilimlar</h1>
         <p>Quroni karim, Hadis, Tafsir va Siyrat</p>
-        <button onclick="toggleTheme()" id="themeBtn">🌙</button>
-    </div>
+    </header>
     
-    <div class="feature-grid" id="featureGrid">
-        <!-- JavaScript yuklaydi -->
-    </div>
-    
-    <div id="content">
-        <h2>🤲 Xush kelibsiz!</h2>
-        <p>WebApp yuklanmoqda...</p>
-    </div>
+    <!-- Content -->
+    <main style="padding:20px;">
+        <h2>🎯 Asosiy Bo'limlar</h2>
+        <div id="featureGrid"></div>
+        <div id="contentArea"></div>
+    </main>
     
     <!-- Loading -->
-    <div class="loader" id="loader">Yuklanmoqda...</div>
+    <div id="loader" style="
+        position:fixed;top:0;left:0;right:0;bottom:0;
+        background:white;display:flex;align-items:center;
+        justify-content:center;z-index:9999;">
+        Yuklanmoqda...
+    </div>
     
     <!-- JavaScript -->
     <script src="/js/theme.js"></script>
     <script src="/js/app.js"></script>
     
     <script>
-        // Tezkor test
-        console.log("✅ HTML yuklandi");
-        
-        // Loader yashirish
-        setTimeout(() => {
-            const loader = document.getElementById('loader');
-            if (loader) loader.style.display = 'none';
-            console.log("✅ Loader yashirildi");
-        }, 1000);
+        // Telegram init
+        window.TelegramWebApp = window.Telegram?.WebApp;
+        if (TelegramWebApp) {
+            TelegramWebApp.expand();
+            TelegramWebApp.ready();
+        }
     </script>
 </body>
 </html>
