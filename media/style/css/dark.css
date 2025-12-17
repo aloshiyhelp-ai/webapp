@@ -1,72 +1,28 @@
-/* TUNGI REJIM - QORONG'I MAVZU */
-:root {
-    /* Asosiy ranglar */
-    --primary-color: #4a90e2;
-    --primary-light: #6ba8ff;
-    --primary-dark: #2c5aa0;
-    
-    /* Fon va matn */
-    --bg-color: #121212;
-    --text-color: #e0e0e0;
-    --text-light: #b0b0b0;
-    --text-lighter: #808080;
-    
-    /* Karta va elementlar */
-    --card-bg: #1e1e1e;
-    --card-shadow: rgba(0, 0, 0, 0.3);
-    --card-border: #2d2d2d;
-    
-    /* Bo'limlar */
-    --section-bg: #1a1a1a;
-    --border-color: #333333;
-    
-    /* Header */
-    --header-bg: linear-gradient(135deg, #1a3a6e, #2c5aa0);
-    --header-text: #ffffff;
-    
-    /* Pastki menyu */
-    --nav-bg: #1e1e1e;
-    --nav-border: #2d2d2d;
-    --nav-text: #b0b0b0;
-    --nav-active: #4a90e2;
-}
-
+/* dark.css - Tungi rejim */
 body {
-    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+    background-color: #121212 !important;
+    color: #ffffff !important;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 .header {
-    background: var(--header-bg);
-    color: var(--header-text);
-}
-
-.bottom-nav {
-    background: var(--nav-bg);
-    border-top-color: var(--nav-border);
-}
-
-.nav-item {
-    color: var(--nav-text);
-}
-
-.nav-item.active {
-    color: var(--nav-active);
+    background: #1a3a6e !important;
+    color: #ffffff !important;
 }
 
 .feature-card {
-    background: var(--card-bg);
-    border-color: var(--card-border);
+    background: #1e1e1e !important;
+    color: #ffffff !important;
+    border: 1px solid #333 !important;
+}
+
+.feature-card:hover {
+    background: #252525 !important;
 }
 
 .content-area {
-    background: var(--section-bg);
-    border-color: var(--border-color);
+    background: #1a1a1a !important;
+    color: #e0e0e0 !important;
 }
 
-.verse-container {
-    background: #252525;
-}
-
-.list-item:hover {
-    background: rgba(74, 144, 226, 0.1);
-}
+/* Boshqa elementlar */
