@@ -1,99 +1,20 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diniy Bilim - Telegram WebApp</title>
-    
-    <!-- Telegram WebApp SDK -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
-    <!-- CSS fayllari -->
-    <link rel="stylesheet" href="/media/style/css/style.css">
-    <!-- Tema dinamik yuklanadi (theme.js tomonidan) -->
-    <link rel="stylesheet" href="" id="theme-style">
-    
-    <!-- Favicon -->
-    <link rel="icon" href="/media/images/favicon.svg" type="image/svg+xml">
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <title>Test</title>
+    <style>
+        body { padding:20px; font-family:Arial; }
+        h1 { color:green; }
+    </style>
 </head>
-<body class="theme-dark"> <!-- Default dark class -->
-    <!-- Header -->
-    <header class="header" id="header">
-        <div class="header-content">
-            <h1 id="app-title">📖 Diniy Bilimlar</h1>
-            <p id="app-subtitle">Quroni karim, Hadis, Tafsir va Siyrat</p>
-        </div>
-        
-        <!-- Mavzu o'zgartirish tugmasi -->
-        <button class="theme-toggle" id="themeToggle" aria-label="Mavzuni o'zgartirish">
-            <span class="theme-icon">☀️</span> <!-- Avvalgi tema bo'yicha -->
-        </button>
-    </header>
+<body>
+    <h1>✅ TEST SAHIFA</h1>
+    <p>Bu oddiy test sahifa</p>
+    <button onclick="alert('JavaScript ishlayapti!')">Test Tugma</button>
     
-    <!-- Asosiy bo'limlar -->
-    <main class="main-container">
-        <section class="main-sections">
-            <h2 class="section-title">🎯 Asosiy Bo'limlar</h2>
-            
-            <div class="feature-grid" id="featureGrid">
-                <!-- Kartalar JavaScript orqali yuklanadi -->
-            </div>
-        </section>
-        
-        <!-- Kontent maydoni -->
-        <section class="content-area" id="contentArea">
-            <div class="welcome-message">
-                <h2 class="content-title">🤲 Xush kelibsiz!</h2>
-                <p>Yuqoridagi bo'limlardan birini tanlang yoki pastki menyudan foydalaning.</p>
-                
-                <!-- Namuna oyat -->
-                <div class="verse-container" id="sampleVerse">
-                    <div class="arabic-text">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
-                    <div class="translation">Mehribon va rahmli Alloh nomi bilan (boshyapman).</div>
-                    <div class="verse-info">
-                        <span>Sura: Fotiha</span>
-                        <span>Oyat: 1</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-    
-    <!-- Loading indikatori -->
-    <div class="loader" id="loader">
-        <div class="spinner"></div>
-        <p>Yuklanmoqda...</p>
-    </div>
-    
-    <!-- Pastki menyu -->
-    <nav class="bottom-nav" id="bottomNav">
-        <!-- JavaScript orqali yuklanadi -->
-    </nav>
-    
-    <!-- JavaScript fayllari -->
-    <!-- 1. Avval theme.js (tema boshqaruvi) -->
-    <script src="/js/theme.js"></script>
-    <!-- 2. Keyin boshqa fayllar -->
-    <script src="/js/app.js"></script>
-    <script src="/js/quran.js"></script>
-    <script src="/js/hadis.js"></script>
-    
-    <!-- Telegram WebApp skripti -->
     <script>
-        // Telegram WebApp global o'zgaruvchisi
-        window.TelegramWebApp = window.Telegram.WebApp;
-        
-        // Sayt yuklanganda tema tekshirish
-        window.addEventListener('load', function() {
-            // Agar tema yo'q bo'lsa, default dark
-            if (!localStorage.getItem('diniy_theme')) {
-                console.log('🌙 Default dark tema o\'rnatildi');
-                localStorage.setItem('diniy_theme', 'dark');
-            }
-        });
+        console.log("✅ Test sahifa yuklandi!");
+        document.write("<p style='color:blue'>✅ JavaScript ISHLAYAPTI!</p>");
     </script>
 </body>
 </html>
