@@ -1,26 +1,122 @@
-/* light.css - Kunduzgi rejim */
-body {
-    background-color: #f5f7fa !important;
-    color: #333333 !important;
-    transition: background-color 0.3s, color 0.3s;
+/* light.css - Full light theme */
+:root {
+    --bg-color: #f5f7fa;
+    --text-color: #333333;
+    --card-bg: #ffffff;
+    --card-border: #dddddd;
+    --header-bg: #2c5aa0;
+    --header-text: #ffffff;
+    --accent-color: #2c5aa0;
+    --hover-bg: #f0f7ff;
+    --shadow-color: rgba(0, 0, 0, 0.08);
 }
 
-.header {
-    background: #2c5aa0 !important;
-    color: #ffffff !important;
+body.theme-light {
+    background-color: var(--bg-color) !important;
+    color: var(--text-color) !important;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.feature-card {
+/* Header */
+.theme-light .header,
+.theme-light header {
+    background: var(--header-bg) !important;
+    color: var(--header-text) !important;
+    border-bottom: 1px solid #e0e0e0 !important;
+}
+
+/* Cards */
+.theme-light .feature-card,
+.theme-light .card,
+.theme-light [class*="card"] {
+    background: var(--card-bg) !important;
+    color: var(--text-color) !important;
+    border: 1px solid var(--card-border) !important;
+    box-shadow: 0 4px 12px var(--shadow-color) !important;
+}
+
+.theme-light .feature-card:hover,
+.theme-light .card:hover {
+    background: var(--hover-bg) !important;
+    border-color: var(--accent-color) !important;
+}
+
+/* Content area */
+.theme-light .content-area,
+.theme-light main,
+.theme-light .container {
     background: #ffffff !important;
     color: #333333 !important;
-    border: 1px solid #ddd !important;
+    border-color: #e0e0e0 !important;
 }
 
-.feature-card:hover {
+/* Text elements */
+.theme-light h1,
+.theme-light h2,
+.theme-light h3,
+.theme-light h4,
+.theme-light h5,
+.theme-light h6 {
+    color: #2c5aa0 !important;
+}
+
+.theme-light p,
+.theme-light span,
+.theme-light div:not(.header) {
+    color: #666666 !important;
+}
+
+/* Buttons */
+.theme-light button:not(.theme-toggle) {
+    background: #2c5aa0 !important;
+    color: white !important;
+    border-color: #4a90e2 !important;
+}
+
+/* Lists */
+.theme-light .list-item {
+    background: #f8f9fa !important;
+    border-color: #e0e0e0 !important;
+    color: #333333 !important;
+}
+
+.theme-light .list-item:hover {
     background: #f0f7ff !important;
 }
 
-.content-area {
+/* Footer/Nav */
+.theme-light .bottom-nav,
+.theme-light footer,
+.theme-light nav {
     background: #ffffff !important;
-    color: #333333 !important;
+    border-color: #e0e0e0 !important;
+    color: #666666 !important;
+}
+
+/* Special elements */
+.theme-light .verse-container {
+    background: #f8f9fa !important;
+    border-left: 4px solid var(--accent-color) !important;
+}
+
+.theme-light .arabic-text {
+    color: #1a3a6e !important;
+}
+
+/* Scrollbar */
+.theme-light ::-webkit-scrollbar {
+    width: 8px;
+}
+
+.theme-light ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.theme-light ::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+}
+
+.theme-light ::-webkit-scrollbar-thumb:hover {
+    background: #aaa;
 }
