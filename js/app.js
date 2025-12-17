@@ -1,196 +1,131 @@
-// Asosiy WebApp ilovasi
-class DiniyWebApp {
+// app.js - Oddiy ishlaydigan versiya
+console.log("✅ app.js yuklandi");
+
+class SimpleApp {
     constructor() {
-        // Telegram WebApp
-        this.telegram = window.TelegramWebApp;
-        this.user = this.telegram?.initDataUnsafe?.user;
-        
-        // Theme ma'lumotlari
-        this.userTheme = localStorage.getItem('diniy_theme') || 'dark';
-        
-        // App holatlari
-        this.currentSection = 'main';
-        this.currentContent = null;
-        
-        // Globalga qo'shish
-        window.app = this;
-        
-        this.init();
-    }
-    
-    async init() {
-        console.log("✅ DiniyWebApp init boshladi");
-        console.log(`🎨 Foydalanuvchi temasi: ${this.userTheme}`);
-        
-        // Telegram WebApp sozlamalari
-        if (this.telegram) {
-            await this.setupTelegram();
-        }
+        console.log("🚀 SimpleApp ishga tushmoqda");
         
         // DOM yuklanganda
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => this.setupApp());
-        } else {
-            this.setupApp();
-        }
-    }
-    
-    async setupTelegram() {
-        console.log("✅ Telegram WebApp sozlanmoqda");
-        
-        // WebApp ni to'liq ekran qilish
-        this.telegram.expand();
-        this.telegram.enableClosingConfirmation();
-        
-        // ========== FOTOALANUVCHI TEMASIGA MOSLASHTIRISH ==========
-        // User theme bo'yicha Telegram ranglarini sozlash
-        if (this.userTheme === 'dark') {
-            this.telegram.setHeaderColor('#1a1a1a');
-            this.telegram.setBackgroundColor('#121212');
-        } else {
-            this.telegram.setHeaderColor('#ffffff');
-            this.telegram.setBackgroundColor('#f5f7fa');
-        }
-        
-        // Telegram theme events
-        this.telegram.onEvent('themeChanged', () => {
-            console.log('🔁 Telegram temasi o\'zgardi');
-            this.syncThemeWithTelegram();
+        document.addEventListener('DOMContentLoaded', () => {
+            this.init();
         });
-        // ========================================================
-        
-        // Orqaga tugmasi
-        this.telegram.BackButton.show();
-        this.telegram.BackButton.onClick(() => {
-            this.goBack();
-        });
-        
-        // Asosiy tugma
-        this.telegram.MainButton.setText('💾 Saqlash');
-        this.telegram.MainButton.show();
-        this.telegram.MainButton.onClick(() => {
-            this.saveCurrentContent();
-        });
-        
-        // Asosiy tugma rangini temaga moslashtirish
-        if (this.userTheme === 'dark') {
-            this.telegram.MainButton.setParams({ color: '#4a90e2' });
-        } else {
-            this.telegram.MainButton.setParams({ color: '#2c5aa0' });
-        }
-        
-        // WebApp tayyor
-        this.telegram.ready();
-        
-        console.log(`✅ Telegram WebApp ishga tushdi! (Theme: ${this.userTheme})`);
-        
-        // Botga kirish haqida ma'lumot yuborish
-        this.sendUserDataToBot();
     }
     
-    syncThemeWithTelegram() {
-        if (!this.telegram) return;
+    init() {
+        console.log("✅ SimpleApp init");
         
-        const telegramTheme = this.telegram.colorScheme;
-        const userTheme = localStorage.getItem('diniy_theme');
+        // Kartalarni yaratish
+        this.createCards();
         
-        // Agar foydalanuvchi temani o'zgartirmagan bo'lsa
-        if (!userTheme && window.themeManager) {
-            window.themeManager.setTheme(
-                telegramTheme === 'dark' ? 'dark' : 'light', 
-                false
-            );
-        }
+        // Menyuni yaratish
+        this.createNav();
+        
+        // Kontentni ko'rsatish
+        this.showContent();
     }
     
-    sendUserDataToBot() {
-        if (!this.telegram || !this.user) return;
-        
-        this.telegram.sendData(JSON.stringify({
-            action: 'user_entered',
-            user_id: this.user.id,
-            username: this.user.username,
-            first_name: this.user.first_name,
-            theme: this.userTheme,
-            timestamp: new Date().toISOString(),
-            app_version: '1.0.0'
-        }));
-        
-        console.log('📤 Botga foydalanuvchi ma\'lumotlari yuborildi');
-    }
-    
-    setupApp() {
-        console.log("✅ setupApp ishga tushdi");
-        
-        // Foydalanuvchi ma'lumotlari
-        if (this.user) {
-            this.updateUserInfo();
+    createCards() {
+        const grid = document.getElementById('featureGrid');
+        if (!grid) {
+            console.warn("⚠️ featureGrid topilmadi");
+            return;
         }
         
-        // Asosiy bo'limlarni yuklash
-        this.loadFeatureCards();
+        const cards = [
+            { icon: '🕋', title: 'Quroni Karim', desc: '114 sura' },
+            { icon: '📜', title: 'Hadisi Sharif', desc: 'Hadis to\'plami' },
+            { icon: '🔍', title: 'Tafsir Ilmi', desc: 'Oyat tafsirlari' },
+            { icon: '🌙', title: 'Siyrat', desc: 'Payg\'ambar hayoti' }
+        ];
         
-        // Pastki menyuni yuklash
-        this.loadBottomNav();
+        grid.innerHTML = cards.map(card => `
+            <div class="feature-card" onclick="app.openCard('${card.title}')">
+                <div class="card-icon">${card.icon}</div>
+                <h3>${card.title}</h3>
+                <p>${card.desc}</p>
+            </div>
+        `).join('');
         
-        // Dastlabki kontent
-        this.showSection('main');
+        console.log("✅ Kartalar yaratildi");
+    }
+    
+    createNav() {
+        const nav = document.getElementById('bottomNav');
+        if (!nav) {
+            console.warn("⚠️ bottomNav topilmadi");
+            return;
+        }
         
-        // Loading ni yashirish
-        setTimeout(() => {
-            this.hideLoader();
+        const items = [
+            { icon: '🏠', text: 'Asosiy' },
+            { icon: '📚', text: 'Darslar' },
+            { icon: '🔖', text: 'Belgilar' },
+            { icon: '🔍', text: 'Qidirish' },
+            { icon: '👤', text: 'Profil' }
+        ];
+        
+        nav.innerHTML = items.map(item => `
+            <a href="#" class="nav-item" onclick="app.navClick('${item.text}')">
+                <div class="nav-icon">${item.icon}</div>
+                <div class="nav-text">${item.text}</div>
+            </a>
+        `).join('');
+        
+        console.log("✅ Menyu yaratildi");
+    }
+    
+    showContent() {
+        const content = document.getElementById('contentArea');
+        if (!content) return;
+        
+        content.innerHTML = `
+            <h2 class="content-title">🤲 Diniy Bilimlar</h2>
+            <p>Python dasturlash platformasiga xush kelibsiz!</p>
             
-            // Welcome notification
-            if (this.telegram && this.user) {
-                setTimeout(() => {
-                    this.telegram.showAlert(`👋 Xush kelibsiz, ${this.user.first_name}!`);
-                }, 300);
-            }
-        }, 500);
+            <div style="margin-top: 20px; padding: 15px; background: #f0f7ff; border-radius: 10px;">
+                <h3>🎯 Imkoniyatlar:</h3>
+                <ul>
+                    <li>Quroni Karim o'qish</li>
+                    <li>Hadislarni o'rganish</li>
+                    <li>Tafsir bilimlari</li>
+                    <li>Siyrat haqida ma'lumot</li>
+                </ul>
+            </div>
+            
+            <button onclick="app.testButton()" style="margin-top: 15px; padding: 10px 20px; background: #2c5aa0; color: white; border: none; border-radius: 5px;">
+                Test Tugmasi
+            </button>
+        `;
+        
+        console.log("✅ Kontent ko'rsatildi");
     }
     
-    updateUserInfo() {
-        const title = document.getElementById('app-title');
-        const avatar = document.querySelector('.user-avatar');
-        
-        if (title) {
-            title.textContent = `📖 Salom, ${this.user.first_name}!`;
-        }
-        
-        if (avatar) {
-            avatar.textContent = this.user.first_name[0].toUpperCase();
-        }
+    openCard(title) {
+        alert(`"${title}" bo'limi ochilmoqda...`);
+        console.log(`📂 Bo'lim ochildi: ${title}`);
     }
     
-    // ... (qolgan funksiyalar o'zgarmaydi) ...
+    navClick(item) {
+        alert(`"${item}" menyusi bosildi`);
+        console.log(`📱 Menyu: ${item}`);
+    }
+    
+    testButton() {
+        alert("✅ Test tugmasi ishlayapti!");
+        console.log("✅ Test tugmasi bosildi");
+    }
 }
 
-// Ilovani ishga tushirish
-document.addEventListener('DOMContentLoaded', function() {
-    console.log("✅ DOM yuklandi, DiniyWebApp ishga tushmoqda...");
-    console.log(`💾 Saqlangan tema: ${localStorage.getItem('diniy_theme') || 'dark (default)'}`);
-    
-    // Global TelegramWebApp o'zgaruvchisi
-    window.TelegramWebApp = window.Telegram?.WebApp;
-    
-    // Ilovani ishga tushirish
-    if (!window.app) {
-        window.app = new DiniyWebApp();
-        console.log("✅ DiniyWebApp ishga tushdi");
-    }
-});
+// Global app
+window.app = new SimpleApp();
 
 // Global funksiyalar
-window.openSection = function(sectionId) {
-    if (window.app) {
-        window.app.openSection(sectionId);
-    }
+window.openCard = function(title) {
+    window.app.openCard(title);
 };
 
-window.showSection = function(sectionId) {
-    if (window.app) {
-        window.app.showSection(sectionId);
-    }
+window.navClick = function(item) {
+    window.app.navClick(item);
 };
 
-console.log("✅ app.js fayli yuklandi");
+console.log("✅ app.js tayyor");
