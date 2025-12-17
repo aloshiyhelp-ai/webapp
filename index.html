@@ -1,20 +1,66 @@
 <!DOCTYPE html>
-<html>
+<html lang="uz">
 <head>
-    <title>Test</title>
-    <style>
-        body { padding:20px; font-family:Arial; }
-        h1 { color:green; }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diniy Bilim</title>
+    
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <!-- CSS fayllari -->
+    <link rel="stylesheet" href="/media/style/css/style.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="/media/images/favicon.svg" type="image/svg+xml">
 </head>
 <body>
-    <h1>✅ TEST SAHIFA</h1>
-    <p>Bu oddiy test sahifa</p>
-    <button onclick="alert('JavaScript ishlayapti!')">Test Tugma</button>
+    <!-- Header -->
+    <header class="header">
+        <h1 id="app-title">📖 Diniy Bilimlar</h1>
+        <p id="app-subtitle">Quroni karim, Hadis, Tafsir va Siyrat</p>
+        <button class="theme-toggle" id="themeToggle">🌙</button>
+    </header>
+    
+    <!-- Asosiy kontent -->
+    <main class="main-container">
+        <h2 class="section-title">🎯 Asosiy Bo'limlar</h2>
+        
+        <div class="feature-grid" id="featureGrid">
+            <!-- JavaScript orqali yuklanadi -->
+        </div>
+        
+        <div class="content-area" id="contentArea">
+            <h2 class="content-title">🤲 Xush kelibsiz!</h2>
+            <p>WebApp yuklanmoqda...</p>
+        </div>
+    </main>
+    
+    <!-- Pastki menyu -->
+    <nav class="bottom-nav" id="bottomNav">
+        <!-- JavaScript orqali yuklanadi -->
+    </nav>
+    
+    <!-- Loading -->
+    <div class="loader" id="loader">Yuklanmoqda...</div>
+    
+    <!-- JavaScript fayllari -->
+    <!-- 1. Avval theme.js -->
+    <script src="/js/theme.js"></script>
+    <!-- 2. Keyin app.js -->
+    <script src="/js/app.js"></script>
     
     <script>
-        console.log("✅ Test sahifa yuklandi!");
-        document.write("<p style='color:blue'>✅ JavaScript ISHLAYAPTI!</p>");
+        // Debug
+        console.log("✅ index.html yuklandi");
+        
+        // Telegram WebApp
+        window.TelegramWebApp = window.Telegram?.WebApp;
+        if (TelegramWebApp) {
+            TelegramWebApp.expand();
+            TelegramWebApp.ready();
+            console.log("✅ Telegram WebApp ishga tushdi");
+        }
     </script>
 </body>
 </html>
