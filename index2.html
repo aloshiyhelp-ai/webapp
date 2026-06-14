@@ -25,7 +25,7 @@
     color: var(--sand);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     min-height: 100vh;
-    padding-bottom: 75px; /* Menu uchun joy */
+    padding-bottom: 75px;
   }
 
   .arabic {
@@ -33,7 +33,6 @@
     direction: rtl;
   }
 
-  /* Sahifalar boshqaruvi */
   .page { display: none; padding: 20px 16px; animation: fadeIn 0.3s ease; }
   .page.active { display: block; }
 
@@ -52,7 +51,6 @@
   h1 .accent { color: var(--gold); }
   .subtitle { font-size: 13px; color: var(--text-dim); margin-top: 4px; }
 
-  /* Joylashuv Statusi */
   .loc-status-card {
     background: rgba(255,255,255,0.02);
     border: 1px solid var(--line);
@@ -75,7 +73,6 @@
     cursor: pointer;
   }
 
-  /* Grid elementlari */
   .prayer-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -212,7 +209,6 @@
     outline: none;
   }
 
-  /* Pastki Navigatsiya Menusi (Bottom Navigation) */
   .bottom-nav {
     position: fixed;
     bottom: 0;
@@ -244,12 +240,7 @@
   }
 
   .nav-item.active { color: var(--gold); }
-  
-  .nav-icon {
-    font-size: 20px;
-    margin-bottom: 2px;
-  }
-
+  .nav-icon { font-size: 20px; margin-bottom: 2px; }
   .section-title { font-size: 18px; color: var(--gold-soft); margin-bottom: 16px; font-weight: 400; border-bottom: 1px solid var(--line); padding-bottom: 6px;}
 </style>
 </head>
@@ -264,8 +255,8 @@
 
   <div class="loc-status-card">
     <div>
-      <div style="font-weight: bold;" id="locCity">Dunyo bo'yicha (GPS)</div>
-      <div style="font-size: 11px; color: var(--text-dim);" id="locCoords">Koordinata kutilmoqda...</div>
+      <div style="font-weight: bold;" id="locCity">Joylashuv aniqlanmoqda...</div>
+      <div style="font-size: 11px; color: var(--text-dim);" id="locCoords">Iltimos kuting...</div>
     </div>
     <button class="refresh-btn" onclick="getLocation(true)">📍 Yangilash</button>
   </div>
@@ -316,7 +307,7 @@
     <div class="setting-row">
       <div class="setting-info">
         <label>Hisoblash Usuli</label>
-        <span>Butun dunyo standartlari</span>
+        <span>Mintaqaviy burchaklar</span>
       </div>
       <select id="calcMethod" onchange="saveSettings()">
         <option value="ISNA">ISNA (Shimoliy Amerika - 15°)</option>
@@ -359,7 +350,6 @@
 </nav>
 
 <script>
-// --- GLOBAL DATA & TELEGRAM INTEGRATION ---
 const tg = window.Telegram?.WebApp;
 if (tg) {
   tg.expand();
@@ -371,7 +361,6 @@ if (tg) {
   }
 }
 
-// Zikrlar ro'yxati
 const zikrlar = [
   { uz: "Subhanalloh", ar: "سُبْحَانَ ٱللَّٰهِ" },
   { uz: "Alhamdulillah", ar: "ٱلْحَمْدُ لِلَّٰهِ" },
@@ -382,84 +371,96 @@ let currentZikrIndex = 0;
 let tasbihCount = 0;
 let tasbihCycle = 0;
 
-// Duolar Ro'yxati
 const duolar = [
   { title: "Uyqudan turganda", when: "Tongda ko'zingizni ochganingizda", ar: "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ", mean: "Bizni o'limga o'xshash uyqudan keyin tiriltirgan Allohga hamdlar bo'lsin, qaytish ham Unga." },
   { title: "Ovqatdan oldin", when: "Taom yeyishni boshlashdan oldin", ar: "بِسْمِ اللَّهِ", mean: "Alloh nomi bilan boshlayman." },
-  { title: "Uydan chiqishda", when: "Eshikdan tashqariga qadam qo'yganda", ar: "بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ", mean: "Alloh nomi bilan, Allohga tayanaman. Kuch-quvvat faqat Alloh bilandir." },
-  { title: "Kiyinayotganda", when: "Yangi yoki kundalik kiyim kiyganda", ar: "الْحَمْدُ لِلَّهِ الَّذِي كَسَانِي هَذَا وَرَزَقَنِيهِ مِنْ غَيْرِ حَوْلٍ مِنِّي وَلَا قُوَّةٍ", mean: "Mening hech qanday kuch-quvvatimsiz ushbu kiyimni menga kiydirgan va rizq qilib bergan Allohga hamd bo'lsin." }
+  { title: "Uydan chiqishda", when: "Eshikdan tashqariga qadam qo'yganda", ar: "بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ", mean: "Alloh nomi bilan, Allohga tayanaman. Kuch-quvvat faqat Alloh bilandir." }
 ];
 
-// --- APP LOGIC ---
-
 window.onload = function() {
-  // Sanani formatlash
   const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
   document.getElementById('currentDateText').innerText = new Date().toLocaleDateString('uz-UZ', options);
-  
-  // Ma'lumotlarni render qilish
   renderDuas();
   loadSettings();
-  getLocation(false); // GPS orqali avtomatik aniqlash (Butun dunyo u-n)
+  getLocation(false); 
 };
 
-// Sahifalarni almashtirish
 function switchPage(pageId, element) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-  
   document.getElementById('page-' + pageId).classList.add('active');
   element.classList.add('active');
-  
-  // Telegram WebApp Tebranish effekti (Haptic Feedback)
-  if (tg && tg.HapticFeedback) {
-    tg.HapticFeedback.impactOccurred('light');
-  }
+  if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
 }
 
-// GPS orqali foydalanuvchi joylashuvini global aniqlash
+// ASOSIY YANGILANISH: GPS va IP Geolocation Kombinatsiyasi
 function getLocation(isManual) {
   const coordLabel = document.getElementById('locCoords');
   const cityLabel = document.getElementById('locCity');
 
-  if (!navigator.geolocation) {
-    coordLabel.innerText = "GPS tizimi qo'llab-quvvatlanmaydi.";
-    fallbackToDefault();
-    return;
+  coordLabel.innerText = "GPS so'ralmoqda...";
+  
+  // 1-QADAM: Haqiqiy GPS (Sun'iy yo'ldosh) orqali tekshirish
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        coordLabel.innerText = `${lat.toFixed(4)}° N, ${lng.toFixed(4)}° E`;
+        cityLabel.innerText = "Joriy joylashuv (GPS)";
+        calculatePrayerTimesGlobal(lat, lng);
+      },
+      (error) => {
+        // 2-QADAM: GPS ishlamasa yoki ruxsat berilmasa, avtomatik IP orqali aniqlash APIsi ulanadi
+        console.log("GPS aniqlay olmadi, IP-geolokatsiyaga o'tilmoqda...");
+        fetchIpLocation();
+      },
+      { enableHighAccuracy: true, timeout: 5000 } // 5 soniya kutadi
+    );
+  } else {
+    fetchIpLocation();
   }
-
-  coordLabel.innerText = "Sun'iy yo'ldosh qidirilmoqda...";
-
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
-      const lat = position.coords.latitude;
-      const lng = position.coords.longitude;
-      coordLabel.innerText = `Kenglik: ${lat.toFixed(4)}°, Uzunlik: ${lng.toFixed(4)}°`;
-      cityLabel.innerText = "Joriy Joylashuvingiz (Aniq)";
-      
-      calculatePrayerTimesGlobal(lat, lng);
-    },
-    (error) => {
-      console.log("GPS xatosi:", error);
-      coordLabel.innerText = "GPS taqiqlangan yoki xato. Standart vaqt.";
-      fallbackToDefault();
-    },
-    { enableHighAccuracy: true, timeout: 8000 }
-  );
 }
 
-// GPS ishlamasa standart vaqtlar (Toshkent vaqti) yuklanadi
+// IP-manzil orqali foydalanuvchi shahrini va koordinatalarini aniqlash (Ruxsat talab qilmaydi)
+function fetchIpLocation() {
+  const coordLabel = document.getElementById('locCoords');
+  const cityLabel = document.getElementById('locCity');
+  
+  coordLabel.innerText = "IP orqali qidirilmoqda...";
+  
+  fetch('https://ipapi.co/json/')
+    .then(res => res.json())
+    .then(data => {
+      if(data.latitude && data.longitude) {
+        const lat = data.latitude;
+        const lng = data.longitude;
+        const city = data.city || "Noma'lum shahar";
+        const country = data.country_name || "";
+        
+        cityLabel.innerText = `${city}, ${country}`;
+        coordLabel.innerText = `${lat.toFixed(4)}° N, ${lng.toFixed(4)}° E (IP tarmoq)`;
+        
+        calculatePrayerTimesGlobal(lat, lng);
+      } else {
+        fallbackToDefault();
+      }
+    })
+    .catch(err => {
+      console.log("IP-API xatosi:", err);
+      fallbackToDefault();
+    });
+}
+
+// Hech qaysi usul ishlamasa (Internet mutloq uzilgan bo'lsa) zaxira variant
 function fallbackToDefault() {
-  document.getElementById('locCity').innerText = "Toshkent (Standart)";
+  document.getElementById('locCity').innerText = "Toshkent (Standart zaxira)";
   document.getElementById('locCoords').innerText = "41.2995° N, 69.2401° E";
   calculatePrayerTimesGlobal(41.2995, 69.2401);
 }
 
-// Dunyo bo'ylab Adhan.js orqali vaqtlarni hisoblash
 function calculatePrayerTimesGlobal(lat, lng) {
   const coordinates = new adhan.Coordinates(lat, lng);
-  
-  // Sozlamalarni o'qish
   const methodSelect = document.getElementById('calcMethod').value;
   const madhabSelect = document.getElementById('madhab').value;
   
@@ -490,7 +491,6 @@ function calculatePrayerTimesGlobal(lat, lng) {
     isha: formatTime(prayerTimes.isha)
   };
 
-  // UI ga chiqarish
   document.getElementById('time-fajr').innerText = times.fajr;
   document.getElementById('time-sunrise').innerText = times.sunrise;
   document.getElementById('time-dhuhr').innerText = times.dhuhr;
@@ -501,7 +501,6 @@ function calculatePrayerTimesGlobal(lat, lng) {
   highlightCurrentPrayer(times);
 }
 
-// Joriy namoz vaqtini yoqish
 function highlightCurrentPrayer(times) {
   document.querySelectorAll('.prayer-card').forEach(c => c.classList.remove('active'));
   const now = new Date().toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit', hour12: false });
@@ -516,7 +515,7 @@ function highlightCurrentPrayer(times) {
   document.getElementById(activeId).classList.add('active');
 }
 
-// --- TASBEH LOGIC ---
+/* Tasbeh va Duolar mantiqlari o'zgarishsiz qoldi */
 function incrementTasbih() {
   tasbihCount++;
   if (tasbihCount > 33) {
@@ -526,14 +525,12 @@ function incrementTasbih() {
   } else {
     if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
   }
-  
   document.getElementById('counterNum').innerText = tasbihCount;
   document.getElementById('counterCycle').innerText = `Aylana: ${tasbihCycle}`;
 }
 
 function resetTasbih() {
-  tasbihCount = 0;
-  tasbihCycle = 0;
+  tasbihCount = 0; tasbihCycle = 0;
   document.getElementById('counterNum').innerText = "0";
   document.getElementById('counterCycle').innerText = "Aylana: 0";
 }
@@ -545,10 +542,8 @@ function switchTasbihZikr() {
   resetTasbih();
 }
 
-// --- DUOLAR LOGIC ---
 function renderDuas() {
-  const container = document.getElementById('duaListContainer');
-  container.innerHTML = duolar.map(d => `
+  document.getElementById('duaListContainer').innerHTML = duolar.map(d => `
     <div class="dua-card">
       <div class="dua-title">${d.title}</div>
       <div class="dua-when">${d.when}</div>
@@ -558,22 +553,15 @@ function renderDuas() {
   `).join('');
 }
 
-// --- SOZLAMALAR ---
 function saveSettings() {
-  const calcMethod = document.getElementById('calcMethod').value;
-  const madhab = document.getElementById('madhab').value;
-  
-  localStorage.setItem('calcMethod', calcMethod);
-  localStorage.setItem('madhab', madhab);
-  
-  // Vaqtni qayta hisoblash
+  localStorage.setItem('calcMethod', document.getElementById('calcMethod').value);
+  localStorage.setItem('madhab', document.getElementById('madhab').value);
   getLocation(false);
 }
 
 function loadSettings() {
   const savedMethod = localStorage.getItem('calcMethod');
   const savedMadhab = localStorage.getItem('madhab');
-  
   if (savedMethod) document.getElementById('calcMethod').value = savedMethod;
   if (savedMadhab) document.getElementById('madhab').value = savedMadhab;
 }
