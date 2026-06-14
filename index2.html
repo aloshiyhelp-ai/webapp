@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vaqt va Duo — Namoz vaqtlari va islomiy kun tartibi</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/adhan/5.0.2/Adhan.min.js"></script>
+<style>
+  :root {
+    --night: #0f1b2d;
+    --night-deep: #081019;
+    --gold: #c9a14a;
+    --gold-soft: #e3cb95;
+    --sand: #f3ecdd;
+    --line: rgba(201, 161, 74, 0.18);
+    --text-dim: #9aa8bb;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: linear-gradient(180deg, var(--night) 0%, var(--night-deep) 100%);
+    color: var(--sand);
+    font-family: 'Georgia', 'Times New Roman', serif;
+    min-height: 100vh;
+    line-height: 1.5;
+  }
+
+  .arabic {
+    font-family: 'Traditional Arabic', 'Amiri', 'Scheherazade New', serif;
+    direction: rtl;
+  }
+
+  header {
+    padding: 48px 24px 32px;
+    text-align: center;
+    position: relative;
+    border-bottom: 1px solid var(--line);
+    overflow: hidden;
+  }
+
+  .eyebrow {
+    font-family: -apple-system, sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 14px;
+    opacity: 0.85;
+  }
+
+  h1 {
+    font-size: clamp(28px, 6vw, 44px);
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    color: var(--sand);
+    margin-bottom: 8px;
+  }
+
+  h1 .accent { color: var(--gold); font-style: italic; }
+
+  .subtitle {
+    font-family: -apple-system, sans-serif;
+    font-size: 13px;
+    color: var(--text-dim);
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .region-bar {
+    max-width: 720px;
+    margin: 28px auto 0;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    font-family: -apple-system, sans-serif;
+  }
+
+  .region-bar select, .region-bar button {
+    font-family: -apple-system, sans-serif;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--line);
+    color: var(--sand);
+    padding: 11px 18px;
+    border-radius: 999px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .region-bar select:hover, .region-bar button:hover {
+    border-color: var(--gold);
+    background: rgba(201,161,74,0.08);
+  }
+
+  .region-bar button.primary {
+    background: var(--gold);
+    color: var(--night-deep);
+    border-color: var(--gold);
+    font-weight: 600;
+  }
+
+  .loc-status {
+    font-size: 12px;
+    color: var(--text-dim);
+    width: 100%;
+    text-align: center;
+    margin-top: 4px;
+    min-height: 16px;
+  }
+
+  main {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  section { margin-bottom: 56px; }
+
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+
+  .section-num {
+    font-family: -apple-system, sans-serif;
+    font-size: 11px;
+    color: var(--gold);
+    letter-spacing: 0.2em;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 4px 12px;
+    flex-shrink: 0;
+  }
+
+  .section-head h2 {
+    font-size: clamp(20px, 4vw, 26px);
+    font-weight: 400;
+    color: var(--sand);
+  }
+
+  .section-line { flex: 1; height: 1px; background: var(--line); }
+
+  .prayer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .prayer-card {
+    background: var(--night-deep);
+    padding: 22px 16px;
+    text-align: center;
+    position: relative;
+  }
+
+  .prayer-card.active { background: rgba(201, 161, 74, 0.15); }
+
+  .prayer-card.active::after {
+    content: '●';
+    color: var(--gold);
+    font-size: 8px;
+    position: absolute;
+    top: 10px;
+    right: 12px;
+  }
+
+  .prayer-name {
+    font-family: -apple-system, sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+  }
+
+  .prayer-card.active .prayer-name { color: var(--gold); }
+  .prayer-time { font-size: 26px; color: var(--sand); font-weight: 400; }
+
+  .next-prayer-note {
+    margin-top: 18px;
+    font-family: -apple-system, sans-serif;
+    font-size: 14px;
+    color: var(--gold-soft);
+    text-align: center;
+  }
+
+  .dua-list { display: grid; gap: 16px; }
+
+  .dua-card {
+    background: rgba(255,255,255,0.025);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--gold);
+    border-radius: 4px;
+    padding: 22px 24px;
+  }
+
+  .dua-card .dua-title { font-family: -apple-system, sans-serif; font-size: 14px; font-weight: 600; color: var(--sand); margin-bottom: 4px; }
+  .dua-card .dua-when { font-family: -apple-system, sans-serif; font-size: 12px; color: var(--gold); margin-bottom: 14px; }
+  .dua-card .dua-arabic { font-size: 22px; line-height: 2; color: var(--gold-soft); margin-bottom: 12px; }
+  .dua-card .dua-translit { font-family: -apple-system, sans-serif; font-size: 13px; color: var(--text-dim); font-style: italic; margin-bottom: 6px; }
+  .dua-card .dua-meaning { font-family: -apple-system, sans-serif; font-size: 13px; color: var(--sand); opacity: 0.85; }
+
+  .event-list { display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+  .event-row { display: grid; grid-template-columns: 110px 1fr 100px; gap: 16px; align-items: center; padding: 18px 4px; border-bottom: 1px solid var(--line); font-family: -apple-system, sans-serif; }
+  .event-row.next { background: rgba(201,161,74,0.06); border-left: 3px solid var(--gold); padding-left: 12px; }
+  .event-date { font-size: 13px; color: var(--gold); }
+  .event-name { font-size: 15px; color: var(--sand); }
+  .event-name .event-ar { display: block; font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+  .event-countdown { font-size: 12px; color: var(--text-dim); text-align: right; }
+  .event-row.next .event-countdown { color: var(--gold-soft); }
+
+  footer { text-align: center; padding: 32px 24px 48px; font-family: -apple-system, sans-serif; font-size: 12px; color: var(--text-dim); border-top: 1px solid var(--line); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Kun tartibi · Duolar · Vaqtlar</div>
+  <h1>Vaqt va <span class="accent">Duo</span></h1>
+  <p class="subtitle">Mintaqangizni tanlang — namoz vaqtlari va har bir holatga mos duolar ko'rsatiladi.</p>
+
+  <div class="region-bar">
+    <select id="citySelect">
+      <option value="">— Shaharni tanlang —</option>
+      <option value="41.2995,69.2401">Toshkent, O'zbekiston</option>
+      <option value="39.6270,66.9750">Samarqand, O'zbekiston</option>
+      <option value="39.7747,64.4286">Buxoro, O'zbekiston</option>
+      <option value="40.7821,72.3442">Andijon, O'zbekiston</option>
+      <option value="41.0011,71.6683">Namangan, O'zbekiston</option>
+      <option value="40.3842,71.7842">Farg'ona, O'zbekiston</option>
+      <option value="42.4531,59.6101">Nukus, O'zbekiston</option>
+    </select>
+    <button class="primary" id="geoBtn">📍 Joylashuvni aniqlash</button>
+  </div>
+  <div class="loc-status" id="locStatus"></div>
+</header>
+
+<main>
+  <section id="prayerSection">
+    <div class="section-head">
+      <span class="section-num">01</span>
+      <h2>Bugungi namoz vaqtlari</h2>
+      <span class="section-line"></span>
+    </div>
+    <div class="prayer-grid" id="prayerGrid">
+      <div class="prayer-card" id="card-fajr"><div class="prayer-name">Bomdod</div><div class="prayer-time" id="time-fajr">—:—</div></div>
+      <div class="prayer-card" id="card-sunrise"><div class="prayer-name">Quyosh</div><div class="prayer-time" id="time-sunrise">—:—</div></div>
+      <div class="prayer-card" id="card-dhuhr"><div class="prayer-name">Peshin</div><div class="prayer-time" id="time-dhuhr">—:—</div></div>
+      <div class="prayer-card" id="card-asr"><div class="prayer-name">Asr</div><div class="prayer-time" id="time-asr">—:—</div></div>
+      <div class="prayer-card" id="card-maghrib"><div class="prayer-name">Shom</div><div class="prayer-time" id="time-maghrib">—:—</div></div>
+      <div class="prayer-card" id="card-isha"><div class="prayer-name">Xufton</div><div class="prayer-time" id="time-isha">—:—</div></div>
+    </div>
+    <div class="next-prayer-note" id="nextPrayerNote">Kutilmoqda...</div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="section-num">02</span>
+      <h2>Qaysi holatda qaysi duo</h2>
+      <span class="section-line"></span>
+    </div>
+    <div class="dua-list" id="duaList"></div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="section-num">03</span>
+      <h2>Yaqin kunlardagi muhim islomiy tadbirlar (2026)</h2>
+      <span class="section-line"></span>
+    </div>
+    <div class="event-list" id="eventList"></div>
+  </section>
+</main>
+
+<footer>
+  Namoz vaqtlari Adhan.js (Hanafi, ISNA 15°) asosida avtonom hisoblanadi.
+</footer>
+
+<script>
+const duas = [
+  {
+    title: "Uyqudan turganda",
+    when: "Tongda ko'zingizni ochganingizda",
+    arabic: "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ",
+    translit: "Alhamdu lillaahil-lazee ahyaanaa ba'da maa amaatanaa wa ilayhin-nushoor",
+    meaning: "Bizni o'limga o'xshash uyqudan keyin tiriltirgan Allohga hamdlar bo'lsin, qaytish ham Unga."
+  },
+  {
+    title: "Ovqatdan oldin",
+    when: "Taom yeyishni boshlashdan oldin",
+    arabic: "بِسْمِ اللَّهِ",
+    translit: "Bismillah",
+    meaning: "Alloh nomi bilan (boshlayman)."
+  },
+  {
+    title: "Uydan chiqishda",
+    when: "Eshikdan tashqariga qadam qo'yganda",
+    arabic: "بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ",
+    translit: "Bismillahi tawakkaltu 'alal-laahi wa laa hawla wa laa quwwata illaa billaah",
+    meaning: "Alloh nomi bilan, Allohga tayanaman. Kuch-quvvat faqat Alloh bilandir."
+  }
+];
+
+const islamicEvents = [
+  { name: "Ramazon oyi boshlanishi", ar: "بداية رمضان", date: new Date("2026-02-18") },
+  { name: "Ramazon hayiti (Iyd al-Fitr)", ar: "عيد الفطر", date: new Date("2026-03-20") },
+  { name: "Qurbon hayiti (Iyd al-Adha)", ar: "عيد الأضحى", date: new Date("2026-05-27") },
+  { name: "Yangi Hijriy yil (1448)", ar: "رأس السنة الهجرية", date: new Date("2026-06-16") },
+  { name: "Ashura kuni", ar: "يوم عاشوراء", date: new Date("2026-06-25") }
+];
+
+function renderDuas() {
+  document.getElementById('duaList').innerHTML = duas.map(d => `
+    <div class="dua-card">
+      <div class="dua-title">${d.title}</div>
+      <div class="dua-when">${d.when}</div>
+      <div class="dua-arabic arabic">${d.arabic}</div>
+      <div class="dua-translit">${d.translit}</div>
+      <div class="dua-meaning">${d.meaning}</div>
+    </div>
+  `).join('');
+}
+
+function renderEvents() {
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const months = ['Yan','Fev','Mar','Apr','May','Iyn','Iyl','Avg','Sen','Okt','Noy','Dek'];
+  
+  const upcoming = islamicEvents.filter(e => e.date >= today).sort((a,b) => a.date - b.date);
+
+  document.getElementById('eventList').innerHTML = upcoming.slice(0, 4).map((ev, i) => {
+    const diff = Math.ceil((ev.date - today) / (1000 * 60 * 60 * 24));
+    const countdown = diff === 0 ? "Bugun" : (diff === 1 ? "Ertaga" : `${diff} kun qoldi`);
+    return `
+      <div class="event-row ${i === 0 ? 'next' : ''}">
+        <div class="event-date">${ev.date.getDate()} ${months[ev.date.getMonth()]}</div>
+        <div class="event-name">${ev.name}<span class="event-ar arabic">${ev.ar}</span></div>
+        <div class="event-countdown">${countdown}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function updatePrayerTimes(lat, lng) {
+  const coordinates = new adhan.Coordinates(lat, lng);
+  const params = adhan.CalculationMethod.NorthAmerica(); // 15 daraja (O'zbekiston sharoitiga eng mos astronomik burchak)
+  params.madhab = adhan.Madhab.Hanafi;
+  
+  const prayerTimes = new adhan.PrayerTimes(coordinates, new Date(), params);
+
+  function formatTime(date) {
+    return date.toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit', hour12: false });
+  }
+
+  const times = {
+    fajr: formatTime(prayerTimes.fajr),
+    sunrise: formatTime(prayerTimes.sunrise),
+    dhuhr: formatTime(prayerTimes.dhuhr),
+    asr: formatTime(prayerTimes.asr),
+    maghrib: formatTime(prayerTimes.maghrib),
+    isha: formatTime(prayerTimes.isha)
+  };
+
+  document.getElementById('time-fajr').innerText = times.fajr;
+  document.getElementById('time-sunrise').innerText = times.sunrise;
+  document.getElementById('time-dhuhr').innerText = times.dhuhr;
+  document.getElementById('time-asr').innerText = times.asr;
+  document.getElementById('time-maghrib').innerText = times.maghrib;
+  document.getElementById('time-isha').innerText = times.isha;
+
+  highlightCurrent(times);
+}
+
+function highlightCurrent(times) {
+  document.querySelectorAll('.prayer-card').forEach(c => c.classList.remove('active'));
+  const now = new Date().toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit', hour12: false });
+  
+  let activeId = 'card-isha';
+  if (now >= times.fajr && now < times.sunrise) activeId = 'card-fajr';
+  else if (now >= times.sunrise && now < times.dhuhr) activeId = 'card-sunrise';
+  else if (now >= times.dhuhr && now < times.asr) activeId = 'card-dhuhr';
+  else if (now >= times.asr && now < times.maghrib) activeId = 'card-asr';
+  else if (now >= times.maghrib && now < times.isha) activeId = 'card-maghrib';
+
+  document.getElementById(activeId).classList.add('active');
+  document.getElementById('nextPrayerNote').innerText = "Vaqtlar muvaffaqiyatli hisoblandi.";
+}
+
+document.getElementById('citySelect').addEventListener('change', function(e) {
+  if(e.target.value) {
+    const [lat, lng] = e.target.value.split(',').map(Number);
+    updatePrayerTimes(lat, lng);
+  }
+});
+
+document.getElementById('geoBtn').addEventListener('click', function() {
+  const status = document.getElementById('locStatus');
+  if (!navigator.geolocation) { status.innerText = "GPS mavjud emas."; return; }
+  status.innerText = "Joylashuv aniqlanmoqda...";
+  navigator.geolocation.getCurrentPosition(pos => {
+    status.innerText = "Joylashuv aniqlandi.";
+    updatePrayerTimes(pos.coords.latitude, pos.coords.longitude);
+    document.getElementById('citySelect').value = "";
+  }, () => { status.innerText = "GPS xatoligi."; });
+});
+
+window.onload = function() {
+  renderDuas();
+  renderEvents();
+  // Boshlanishiga Toshkent koordinatalari
+  document.getElementById('citySelect').value = "41.2995,69.2401";
+  updatePrayerTimes(41.2995, 69.2401);
+};
+</script>
+</body>
+</html>
