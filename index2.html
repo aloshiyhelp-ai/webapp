@@ -2,9 +2,11 @@
 <html lang="uz">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vaqt va Duo — Namoz vaqtlari va islomiy kun tartibi</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Vaqt va Duo — Telegram WebApp</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/adhan/5.0.2/Adhan.min.js"></script>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
 <style>
   :root {
     --night: #0f1b2d;
@@ -16,349 +18,467 @@
     --text-dim: #9aa8bb;
   }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
   body {
     background: linear-gradient(180deg, var(--night) 0%, var(--night-deep) 100%);
     color: var(--sand);
-    font-family: 'Georgia', 'Times New Roman', serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     min-height: 100vh;
-    line-height: 1.5;
+    padding-bottom: 75px; /* Menu uchun joy */
   }
 
   .arabic {
-    font-family: 'Traditional Arabic', 'Amiri', 'Scheherazade New', serif;
+    font-family: 'Traditional Arabic', 'Amiri', serif;
     direction: rtl;
   }
 
+  /* Sahifalar boshqaruvi */
+  .page { display: none; padding: 20px 16px; animation: fadeIn 0.3s ease; }
+  .page.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
   header {
-    padding: 48px 24px 32px;
+    padding: 24px 16px;
     text-align: center;
-    position: relative;
     border-bottom: 1px solid var(--line);
-    overflow: hidden;
   }
 
-  .eyebrow {
-    font-family: -apple-system, sans-serif;
-    font-size: 11px;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 14px;
-    opacity: 0.85;
-  }
+  h1 { font-size: 24px; font-weight: 500; color: var(--sand); }
+  h1 .accent { color: var(--gold); }
+  .subtitle { font-size: 13px; color: var(--text-dim); margin-top: 4px; }
 
-  h1 {
-    font-size: clamp(28px, 6vw, 44px);
-    font-weight: 400;
-    letter-spacing: 0.02em;
-    color: var(--sand);
-    margin-bottom: 8px;
-  }
-
-  h1 .accent { color: var(--gold); font-style: italic; }
-
-  .subtitle {
-    font-family: -apple-system, sans-serif;
-    font-size: 13px;
-    color: var(--text-dim);
-    max-width: 480px;
-    margin: 0 auto;
-  }
-
-  .region-bar {
-    max-width: 720px;
-    margin: 28px auto 0;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-    font-family: -apple-system, sans-serif;
-  }
-
-  .region-bar select, .region-bar button {
-    font-family: -apple-system, sans-serif;
-    background: rgba(255,255,255,0.04);
+  /* Joylashuv Statusi */
+  .loc-status-card {
+    background: rgba(255,255,255,0.02);
     border: 1px solid var(--line);
-    color: var(--sand);
-    padding: 11px 18px;
-    border-radius: 999px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.2s ease;
+    border-radius: 12px;
+    padding: 12px;
+    margin: 16px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
   }
-
-  .region-bar select:hover, .region-bar button:hover {
-    border-color: var(--gold);
-    background: rgba(201,161,74,0.08);
-  }
-
-  .region-bar button.primary {
+  .refresh-btn {
     background: var(--gold);
     color: var(--night-deep);
-    border-color: var(--gold);
-    font-weight: 600;
-  }
-
-  .loc-status {
-    font-size: 12px;
-    color: var(--text-dim);
-    width: 100%;
-    text-align: center;
-    margin-top: 4px;
-    min-height: 16px;
-  }
-
-  main {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 40px 24px 80px;
-  }
-
-  section { margin-bottom: 56px; }
-
-  .section-head {
-    display: flex;
-    align-items: baseline;
-    gap: 14px;
-    margin-bottom: 24px;
-  }
-
-  .section-num {
-    font-family: -apple-system, sans-serif;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 20px;
     font-size: 11px;
-    color: var(--gold);
-    letter-spacing: 0.2em;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    padding: 4px 12px;
-    flex-shrink: 0;
+    font-weight: bold;
+    cursor: pointer;
   }
 
-  .section-head h2 {
-    font-size: clamp(20px, 4vw, 26px);
-    font-weight: 400;
-    color: var(--sand);
-  }
-
-  .section-line { flex: 1; height: 1px; background: var(--line); }
-
+  /* Grid elementlari */
   .prayer-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 1px;
-    background: var(--line);
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    overflow: hidden;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 16px;
   }
 
   .prayer-card {
-    background: var(--night-deep);
-    padding: 22px 16px;
+    background: rgba(8, 16, 25, 0.7);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px;
     text-align: center;
     position: relative;
   }
 
-  .prayer-card.active { background: rgba(201, 161, 74, 0.15); }
+  .prayer-card.active {
+    border-color: var(--gold);
+    background: rgba(201, 161, 74, 0.1);
+  }
 
   .prayer-card.active::after {
     content: '●';
     color: var(--gold);
-    font-size: 8px;
+    font-size: 10px;
     position: absolute;
-    top: 10px;
+    top: 8px;
     right: 12px;
   }
 
-  .prayer-name {
-    font-family: -apple-system, sans-serif;
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin-bottom: 10px;
-  }
-
+  .prayer-name { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; }
   .prayer-card.active .prayer-name { color: var(--gold); }
-  .prayer-time { font-size: 26px; color: var(--sand); font-weight: 400; }
+  .prayer-time { font-size: 22px; color: var(--sand); font-weight: bold; }
 
-  .next-prayer-note {
-    margin-top: 18px;
-    font-family: -apple-system, sans-serif;
-    font-size: 14px;
-    color: var(--gold-soft);
+  /* Tasbeh bo'limi */
+  .tasbih-container {
     text-align: center;
+    padding: 40px 20px;
   }
+  .counter-display {
+    width: 160px;
+    height: 160px;
+    background: rgba(255,255,255,0.03);
+    border: 4px solid var(--line);
+    border-radius: 50%;
+    margin: 0 auto 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.1s ease;
+  }
+  .counter-display:active { transform: scale(0.96); border-color: var(--gold); }
+  .counter-num { font-size: 48px; color: var(--sand); font-weight: 300; }
+  .counter-target { font-size: 12px; color: var(--text-dim); }
+  
+  .tasbih-phrase { font-size: 18px; color: var(--gold-soft); margin-bottom: 8px; min-height: 27px; }
+  .tasbih-arabic { font-size: 24px; color: var(--gold); margin-bottom: 24px; min-height: 36px; }
 
-  .dua-list { display: grid; gap: 16px; }
+  .tasbih-tools { display: flex; justify-content: center; gap: 12px; }
+  .tool-btn {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--sand);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .tool-btn:hover { border-color: var(--gold); }
 
+  /* Duolar Ro'yxati */
+  .dua-list { display: grid; gap: 12px; margin-top: 10px; }
   .dua-card {
-    background: rgba(255,255,255,0.025);
+    background: rgba(255,255,255,0.02);
     border: 1px solid var(--line);
     border-left: 3px solid var(--gold);
-    border-radius: 4px;
-    padding: 22px 24px;
+    border-radius: 8px;
+    padding: 16px;
+  }
+  .dua-title { font-size: 15px; font-weight: 600; color: var(--sand); }
+  .dua-when { font-size: 11px; color: var(--gold); margin-bottom: 8px; }
+  .dua-arabic { font-size: 20px; line-height: 1.8; color: var(--gold-soft); margin-bottom: 8px; text-align: right; }
+  .dua-meaning { font-size: 13px; color: var(--text-dim); }
+
+  /* Profil va Sozlamalar */
+  .profile-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .profile-avatar {
+    width: 64px;
+    height: 64px;
+    background: var(--gold);
+    color: var(--night-deep);
+    border-radius: 50%;
+    margin: 0 auto 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+  }
+  .setting-group {
+    background: rgba(255,255,255,0.01);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  .setting-row:last-child { border-bottom: none; }
+  .setting-info label { font-size: 14px; color: var(--sand); display: block; }
+  .setting-info span { font-size: 11px; color: var(--text-dim); }
+  
+  .setting-row select {
+    background: var(--night-deep);
+    color: var(--sand);
+    border: 1px solid var(--line);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    outline: none;
   }
 
-  .dua-card .dua-title { font-family: -apple-system, sans-serif; font-size: 14px; font-weight: 600; color: var(--sand); margin-bottom: 4px; }
-  .dua-card .dua-when { font-family: -apple-system, sans-serif; font-size: 12px; color: var(--gold); margin-bottom: 14px; }
-  .dua-card .dua-arabic { font-size: 22px; line-height: 2; color: var(--gold-soft); margin-bottom: 12px; }
-  .dua-card .dua-translit { font-family: -apple-system, sans-serif; font-size: 13px; color: var(--text-dim); font-style: italic; margin-bottom: 6px; }
-  .dua-card .dua-meaning { font-family: -apple-system, sans-serif; font-size: 13px; color: var(--sand); opacity: 0.85; }
+  /* Pastki Navigatsiya Menusi (Bottom Navigation) */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 65px;
+    background: #060b12;
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 1000;
+  }
 
-  .event-list { display: flex; flex-direction: column; border-top: 1px solid var(--line); }
-  .event-row { display: grid; grid-template-columns: 110px 1fr 100px; gap: 16px; align-items: center; padding: 18px 4px; border-bottom: 1px solid var(--line); font-family: -apple-system, sans-serif; }
-  .event-row.next { background: rgba(201,161,74,0.06); border-left: 3px solid var(--gold); padding-left: 12px; }
-  .event-date { font-size: 13px; color: var(--gold); }
-  .event-name { font-size: 15px; color: var(--sand); }
-  .event-name .event-ar { display: block; font-size: 12px; color: var(--text-dim); margin-top: 2px; }
-  .event-countdown { font-size: 12px; color: var(--text-dim); text-align: right; }
-  .event-row.next .event-countdown { color: var(--gold-soft); }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 11px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 25%;
+    height: 100%;
+    justify-content: center;
+    transition: color 0.2s ease;
+  }
 
-  footer { text-align: center; padding: 32px 24px 48px; font-family: -apple-system, sans-serif; font-size: 12px; color: var(--text-dim); border-top: 1px solid var(--line); }
+  .nav-item.active { color: var(--gold); }
+  
+  .nav-icon {
+    font-size: 20px;
+    margin-bottom: 2px;
+  }
+
+  .section-title { font-size: 18px; color: var(--gold-soft); margin-bottom: 16px; font-weight: 400; border-bottom: 1px solid var(--line); padding-bottom: 6px;}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="eyebrow">Kun tartibi · Duolar · Vaqtlar</div>
-  <h1>Vaqt va <span class="accent">Duo</span></h1>
-  <p class="subtitle">Mintaqangizni tanlang — namoz vaqtlari va har bir holatga mos duolar ko'rsatiladi.</p>
+<div id="page-vaqtlar" class="page active">
+  <header>
+    <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold);">Global Hisoblagich</div>
+    <h1>Vaqt va <span class="accent">Duo</span></h1>
+    <p class="subtitle" id="currentDateText">Yuklanmoqda...</p>
+  </header>
 
-  <div class="region-bar">
-    <select id="citySelect">
-      <option value="">— Shaharni tanlang —</option>
-      <option value="41.2995,69.2401">Toshkent, O'zbekiston</option>
-      <option value="39.6270,66.9750">Samarqand, O'zbekiston</option>
-      <option value="39.7747,64.4286">Buxoro, O'zbekiston</option>
-      <option value="40.7821,72.3442">Andijon, O'zbekiston</option>
-      <option value="41.0011,71.6683">Namangan, O'zbekiston</option>
-      <option value="40.3842,71.7842">Farg'ona, O'zbekiston</option>
-      <option value="42.4531,59.6101">Nukus, O'zbekiston</option>
-    </select>
-    <button class="primary" id="geoBtn">📍 Joylashuvni aniqlash</button>
+  <div class="loc-status-card">
+    <div>
+      <div style="font-weight: bold;" id="locCity">Dunyo bo'yicha (GPS)</div>
+      <div style="font-size: 11px; color: var(--text-dim);" id="locCoords">Koordinata kutilmoqda...</div>
+    </div>
+    <button class="refresh-btn" onclick="getLocation(true)">📍 Yangilash</button>
   </div>
-  <div class="loc-status" id="locStatus"></div>
-</header>
 
-<main>
-  <section id="prayerSection">
-    <div class="section-head">
-      <span class="section-num">01</span>
-      <h2>Bugungi namoz vaqtlari</h2>
-      <span class="section-line"></span>
-    </div>
-    <div class="prayer-grid" id="prayerGrid">
-      <div class="prayer-card" id="card-fajr"><div class="prayer-name">Bomdod</div><div class="prayer-time" id="time-fajr">—:—</div></div>
-      <div class="prayer-card" id="card-sunrise"><div class="prayer-name">Quyosh</div><div class="prayer-time" id="time-sunrise">—:—</div></div>
-      <div class="prayer-card" id="card-dhuhr"><div class="prayer-name">Peshin</div><div class="prayer-time" id="time-dhuhr">—:—</div></div>
-      <div class="prayer-card" id="card-asr"><div class="prayer-name">Asr</div><div class="prayer-time" id="time-asr">—:—</div></div>
-      <div class="prayer-card" id="card-maghrib"><div class="prayer-name">Shom</div><div class="prayer-time" id="time-maghrib">—:—</div></div>
-      <div class="prayer-card" id="card-isha"><div class="prayer-name">Xufton</div><div class="prayer-time" id="time-isha">—:—</div></div>
-    </div>
-    <div class="next-prayer-note" id="nextPrayerNote">Kutilmoqda...</div>
-  </section>
+  <div class="prayer-grid">
+    <div class="prayer-card" id="card-fajr"><div class="prayer-name">Bomdod</div><div class="prayer-time" id="time-fajr">—:—</div></div>
+    <div class="prayer-card" id="card-sunrise"><div class="prayer-name">Quyosh</div><div class="prayer-time" id="time-sunrise">—:—</div></div>
+    <div class="prayer-card" id="card-dhuhr"><div class="prayer-name">Peshin</div><div class="prayer-time" id="time-dhuhr">—:—</div></div>
+    <div class="prayer-card" id="card-asr"><div class="prayer-name">Asr</div><div class="prayer-time" id="time-asr">—:—</div></div>
+    <div class="prayer-card" id="card-maghrib"><div class="prayer-name">Shom</div><div class="prayer-time" id="time-maghrib">—:—</div></div>
+    <div class="prayer-card" id="card-isha"><div class="prayer-name">Xufton</div><div class="prayer-time" id="time-isha">—:—</div></div>
+  </div>
+</div>
 
-  <section>
-    <div class="section-head">
-      <span class="section-num">02</span>
-      <h2>Qaysi holatda qaysi duo</h2>
-      <span class="section-line"></span>
+<div id="page-tasbeh" class="page">
+  <h2 class="section-title">Raqamli Tasbeh</h2>
+  <div class="tasbih-container">
+    <div class="tasbih-phrase" id="tasbihPhrase">Subhanalloh</div>
+    <div class="tasbih-arabic arabic" id="tasbihArabic">سُبْحَانَ ٱللَّٰهِ</div>
+    
+    <div class="counter-display" onclick="incrementTasbih()">
+      <div class="counter-num" id="counterNum">0</div>
+      <div class="counter-target" id="counterCycle">Aylana: 0</div>
     </div>
-    <div class="dua-list" id="duaList"></div>
-  </section>
 
-  <section>
-    <div class="section-head">
-      <span class="section-num">03</span>
-      <h2>Yaqin kunlardagi muhim islomiy tadbirlar (2026)</h2>
-      <span class="section-line"></span>
+    <div class="tasbih-tools">
+      <button class="tool-btn" onclick="resetTasbih()">Nollash</button>
+      <button class="tool-btn" onclick="switchTasbihZikr()">Zikrni o'zgartirish</button>
     </div>
-    <div class="event-list" id="eventList"></div>
-  </section>
-</main>
+  </div>
+</div>
 
-<footer>
-  Namoz vaqtlari Adhan.js (Hanafi, ISNA 15°) asosida avtonom hisoblanadi.
-</footer>
+<div id="page-duolar" class="page">
+  <h2 class="section-title">Kundalik Duolar</h2>
+  <div class="dua-list" id="duaListContainer"></div>
+</div>
+
+<div id="page-profil" class="page">
+  <h2 class="section-title">Profil va Sozlamalar</h2>
+  
+  <div class="profile-card">
+    <div class="profile-avatar" id="userAvatar">U</div>
+    <div style="font-weight: bold; font-size: 16px;" id="userName">Musofir Foydalanuvchi</div>
+    <div style="font-size: 12px; color: var(--text-dim); margin-top: 4px;">Telegram WebApp rejimi</div>
+  </div>
+
+  <div class="setting-group">
+    <div class="setting-row">
+      <div class="setting-info">
+        <label>Hisoblash Usuli</label>
+        <span>Butun dunyo standartlari</span>
+      </div>
+      <select id="calcMethod" onchange="saveSettings()">
+        <option value="ISNA">ISNA (Shimoliy Amerika - 15°)</option>
+        <option value="MWL">Muslim World League (18°)</option>
+        <option value="Egypt">Misr (19.5°)</option>
+        <option value="Makkah">Umm Al-Qura (Makka)</option>
+        <option value="Karachi">Karachi (18°)</option>
+      </select>
+    </div>
+    <div class="setting-row">
+      <div class="setting-info">
+        <label>Mazhab</label>
+        <span>Asr namozi vaqti uchun</span>
+      </div>
+      <select id="madhab" onchange="saveSettings()">
+        <option value="Hanafi">Hanafiy</option>
+        <option value="Shafi">Shafiy / Molikiy / Hanbaliy</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<nav class="bottom-nav">
+  <button class="nav-item active" onclick="switchPage('vaqtlar', this)">
+    <div class="nav-icon">🕒</div>
+    <div>Vaqtlar</div>
+  </button>
+  <button class="nav-item" onclick="switchPage('tasbeh', this)">
+    <div class="nav-icon">📿</div>
+    <div>Tasbeh</div>
+  </button>
+  <button class="nav-item" onclick="switchPage('duolar', this)">
+    <div class="nav-icon">📖</div>
+    <div>Duolar</div>
+  </button>
+  <button class="nav-item" onclick="switchPage('profil', this)">
+    <div class="nav-icon">👤</div>
+    <div>Profil</div>
+  </button>
+</nav>
 
 <script>
-const duas = [
-  {
-    title: "Uyqudan turganda",
-    when: "Tongda ko'zingizni ochganingizda",
-    arabic: "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ",
-    translit: "Alhamdu lillaahil-lazee ahyaanaa ba'da maa amaatanaa wa ilayhin-nushoor",
-    meaning: "Bizni o'limga o'xshash uyqudan keyin tiriltirgan Allohga hamdlar bo'lsin, qaytish ham Unga."
-  },
-  {
-    title: "Ovqatdan oldin",
-    when: "Taom yeyishni boshlashdan oldin",
-    arabic: "بِسْمِ اللَّهِ",
-    translit: "Bismillah",
-    meaning: "Alloh nomi bilan (boshlayman)."
-  },
-  {
-    title: "Uydan chiqishda",
-    when: "Eshikdan tashqariga qadam qo'yganda",
-    arabic: "بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ",
-    translit: "Bismillahi tawakkaltu 'alal-laahi wa laa hawla wa laa quwwata illaa billaah",
-    meaning: "Alloh nomi bilan, Allohga tayanaman. Kuch-quvvat faqat Alloh bilandir."
+// --- GLOBAL DATA & TELEGRAM INTEGRATION ---
+const tg = window.Telegram?.WebApp;
+if (tg) {
+  tg.expand();
+  tg.ready();
+  if (tg.initDataUnsafe?.user) {
+    const user = tg.initDataUnsafe.user;
+    document.getElementById('userName').innerText = (user.first_name + ' ' + (user.last_name || '')).trim();
+    document.getElementById('userAvatar').innerText = user.first_name.charAt(0).toUpperCase();
   }
-];
-
-const islamicEvents = [
-  { name: "Ramazon oyi boshlanishi", ar: "بداية رمضان", date: new Date("2026-02-18") },
-  { name: "Ramazon hayiti (Iyd al-Fitr)", ar: "عيد الفطر", date: new Date("2026-03-20") },
-  { name: "Qurbon hayiti (Iyd al-Adha)", ar: "عيد الأضحى", date: new Date("2026-05-27") },
-  { name: "Yangi Hijriy yil (1448)", ar: "رأس السنة الهجرية", date: new Date("2026-06-16") },
-  { name: "Ashura kuni", ar: "يوم عاشوراء", date: new Date("2026-06-25") }
-];
-
-function renderDuas() {
-  document.getElementById('duaList').innerHTML = duas.map(d => `
-    <div class="dua-card">
-      <div class="dua-title">${d.title}</div>
-      <div class="dua-when">${d.when}</div>
-      <div class="dua-arabic arabic">${d.arabic}</div>
-      <div class="dua-translit">${d.translit}</div>
-      <div class="dua-meaning">${d.meaning}</div>
-    </div>
-  `).join('');
 }
 
-function renderEvents() {
-  const today = new Date();
-  today.setHours(0,0,0,0);
-  const months = ['Yan','Fev','Mar','Apr','May','Iyn','Iyl','Avg','Sen','Okt','Noy','Dek'];
+// Zikrlar ro'yxati
+const zikrlar = [
+  { uz: "Subhanalloh", ar: "سُبْحَانَ ٱللَّٰهِ" },
+  { uz: "Alhamdulillah", ar: "ٱلْحَمْدُ لِلَّٰهِ" },
+  { uz: "Allohu Akbar", ar: "ٱللَّٰهُ أَكْبَرُ" },
+  { uz: "Astagofirulloh", ar: "أَسْتَغْفِرُ ٱللَّٰهَ" }
+];
+let currentZikrIndex = 0;
+let tasbihCount = 0;
+let tasbihCycle = 0;
+
+// Duolar Ro'yxati
+const duolar = [
+  { title: "Uyqudan turganda", when: "Tongda ko'zingizni ochganingizda", ar: "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ", mean: "Bizni o'limga o'xshash uyqudan keyin tiriltirgan Allohga hamdlar bo'lsin, qaytish ham Unga." },
+  { title: "Ovqatdan oldin", when: "Taom yeyishni boshlashdan oldin", ar: "بِسْمِ اللَّهِ", mean: "Alloh nomi bilan boshlayman." },
+  { title: "Uydan chiqishda", when: "Eshikdan tashqariga qadam qo'yganda", ar: "بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ", mean: "Alloh nomi bilan, Allohga tayanaman. Kuch-quvvat faqat Alloh bilandir." },
+  { title: "Kiyinayotganda", when: "Yangi yoki kundalik kiyim kiyganda", ar: "الْحَمْدُ لِلَّهِ الَّذِي كَسَانِي هَذَا وَرَزَقَنِيهِ مِنْ غَيْرِ حَوْلٍ مِنِّي وَلَا قُوَّةٍ", mean: "Mening hech qanday kuch-quvvatimsiz ushbu kiyimni menga kiydirgan va rizq qilib bergan Allohga hamd bo'lsin." }
+];
+
+// --- APP LOGIC ---
+
+window.onload = function() {
+  // Sanani formatlash
+  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  document.getElementById('currentDateText').innerText = new Date().toLocaleDateString('uz-UZ', options);
   
-  const upcoming = islamicEvents.filter(e => e.date >= today).sort((a,b) => a.date - b.date);
+  // Ma'lumotlarni render qilish
+  renderDuas();
+  loadSettings();
+  getLocation(false); // GPS orqali avtomatik aniqlash (Butun dunyo u-n)
+};
 
-  document.getElementById('eventList').innerHTML = upcoming.slice(0, 4).map((ev, i) => {
-    const diff = Math.ceil((ev.date - today) / (1000 * 60 * 60 * 24));
-    const countdown = diff === 0 ? "Bugun" : (diff === 1 ? "Ertaga" : `${diff} kun qoldi`);
-    return `
-      <div class="event-row ${i === 0 ? 'next' : ''}">
-        <div class="event-date">${ev.date.getDate()} ${months[ev.date.getMonth()]}</div>
-        <div class="event-name">${ev.name}<span class="event-ar arabic">${ev.ar}</span></div>
-        <div class="event-countdown">${countdown}</div>
-      </div>
-    `;
-  }).join('');
+// Sahifalarni almashtirish
+function switchPage(pageId, element) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  
+  document.getElementById('page-' + pageId).classList.add('active');
+  element.classList.add('active');
+  
+  // Telegram WebApp Tebranish effekti (Haptic Feedback)
+  if (tg && tg.HapticFeedback) {
+    tg.HapticFeedback.impactOccurred('light');
+  }
 }
 
-function updatePrayerTimes(lat, lng) {
+// GPS orqali foydalanuvchi joylashuvini global aniqlash
+function getLocation(isManual) {
+  const coordLabel = document.getElementById('locCoords');
+  const cityLabel = document.getElementById('locCity');
+
+  if (!navigator.geolocation) {
+    coordLabel.innerText = "GPS tizimi qo'llab-quvvatlanmaydi.";
+    fallbackToDefault();
+    return;
+  }
+
+  coordLabel.innerText = "Sun'iy yo'ldosh qidirilmoqda...";
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      coordLabel.innerText = `Kenglik: ${lat.toFixed(4)}°, Uzunlik: ${lng.toFixed(4)}°`;
+      cityLabel.innerText = "Joriy Joylashuvingiz (Aniq)";
+      
+      calculatePrayerTimesGlobal(lat, lng);
+    },
+    (error) => {
+      console.log("GPS xatosi:", error);
+      coordLabel.innerText = "GPS taqiqlangan yoki xato. Standart vaqt.";
+      fallbackToDefault();
+    },
+    { enableHighAccuracy: true, timeout: 8000 }
+  );
+}
+
+// GPS ishlamasa standart vaqtlar (Toshkent vaqti) yuklanadi
+function fallbackToDefault() {
+  document.getElementById('locCity').innerText = "Toshkent (Standart)";
+  document.getElementById('locCoords').innerText = "41.2995° N, 69.2401° E";
+  calculatePrayerTimesGlobal(41.2995, 69.2401);
+}
+
+// Dunyo bo'ylab Adhan.js orqali vaqtlarni hisoblash
+function calculatePrayerTimesGlobal(lat, lng) {
   const coordinates = new adhan.Coordinates(lat, lng);
-  const params = adhan.CalculationMethod.NorthAmerica(); // 15 daraja (O'zbekiston sharoitiga eng mos astronomik burchak)
-  params.madhab = adhan.Madhab.Hanafi;
   
-  const prayerTimes = new adhan.PrayerTimes(coordinates, new Date(), params);
+  // Sozlamalarni o'qish
+  const methodSelect = document.getElementById('calcMethod').value;
+  const madhabSelect = document.getElementById('madhab').value;
+  
+  let params;
+  if (methodSelect === 'ISNA') params = adhan.CalculationMethod.NorthAmerica();
+  else if (methodSelect === 'MWL') params = adhan.CalculationMethod.MuslimWorldLeague();
+  else if (methodSelect === 'Egypt') params = adhan.CalculationMethod.Egyptian();
+  else if (methodSelect === 'Makkah') params = adhan.CalculationMethod.UmmAlQura();
+  else if (methodSelect === 'Karachi') params = adhan.CalculationMethod.Karachi();
+  else params = adhan.CalculationMethod.NorthAmerica();
 
-  function formatTime(date) {
-    return date.toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit', hour12: false });
+  params.madhab = madhabSelect === 'Hanafi' ? adhan.Madhab.Hanafi : adhan.Madhab.Shafi;
+
+  const date = new Date();
+  const prayerTimes = new adhan.PrayerTimes(coordinates, date, params);
+
+  function formatTime(timeObj) {
+    if (!timeObj) return "—:—";
+    return timeObj.toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit', hour12: false });
   }
 
   const times = {
@@ -370,6 +490,7 @@ function updatePrayerTimes(lat, lng) {
     isha: formatTime(prayerTimes.isha)
   };
 
+  // UI ga chiqarish
   document.getElementById('time-fajr').innerText = times.fajr;
   document.getElementById('time-sunrise').innerText = times.sunrise;
   document.getElementById('time-dhuhr').innerText = times.dhuhr;
@@ -377,10 +498,11 @@ function updatePrayerTimes(lat, lng) {
   document.getElementById('time-maghrib').innerText = times.maghrib;
   document.getElementById('time-isha').innerText = times.isha;
 
-  highlightCurrent(times);
+  highlightCurrentPrayer(times);
 }
 
-function highlightCurrent(times) {
+// Joriy namoz vaqtini yoqish
+function highlightCurrentPrayer(times) {
   document.querySelectorAll('.prayer-card').forEach(c => c.classList.remove('active'));
   const now = new Date().toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit', hour12: false });
   
@@ -392,34 +514,69 @@ function highlightCurrent(times) {
   else if (now >= times.maghrib && now < times.isha) activeId = 'card-maghrib';
 
   document.getElementById(activeId).classList.add('active');
-  document.getElementById('nextPrayerNote').innerText = "Vaqtlar muvaffaqiyatli hisoblandi.";
 }
 
-document.getElementById('citySelect').addEventListener('change', function(e) {
-  if(e.target.value) {
-    const [lat, lng] = e.target.value.split(',').map(Number);
-    updatePrayerTimes(lat, lng);
+// --- TASBEH LOGIC ---
+function incrementTasbih() {
+  tasbihCount++;
+  if (tasbihCount > 33) {
+    tasbihCount = 1;
+    tasbihCycle++;
+    if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+  } else {
+    if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
   }
-});
+  
+  document.getElementById('counterNum').innerText = tasbihCount;
+  document.getElementById('counterCycle').innerText = `Aylana: ${tasbihCycle}`;
+}
 
-document.getElementById('geoBtn').addEventListener('click', function() {
-  const status = document.getElementById('locStatus');
-  if (!navigator.geolocation) { status.innerText = "GPS mavjud emas."; return; }
-  status.innerText = "Joylashuv aniqlanmoqda...";
-  navigator.geolocation.getCurrentPosition(pos => {
-    status.innerText = "Joylashuv aniqlandi.";
-    updatePrayerTimes(pos.coords.latitude, pos.coords.longitude);
-    document.getElementById('citySelect').value = "";
-  }, () => { status.innerText = "GPS xatoligi."; });
-});
+function resetTasbih() {
+  tasbihCount = 0;
+  tasbihCycle = 0;
+  document.getElementById('counterNum').innerText = "0";
+  document.getElementById('counterCycle').innerText = "Aylana: 0";
+}
 
-window.onload = function() {
-  renderDuas();
-  renderEvents();
-  // Boshlanishiga Toshkent koordinatalari
-  document.getElementById('citySelect').value = "41.2995,69.2401";
-  updatePrayerTimes(41.2995, 69.2401);
-};
+function switchTasbihZikr() {
+  currentZikrIndex = (currentZikrIndex + 1) % zikrlar.length;
+  document.getElementById('tasbihPhrase').innerText = zikrlar[currentZikrIndex].uz;
+  document.getElementById('tasbihArabic').innerText = zikrlar[currentZikrIndex].ar;
+  resetTasbih();
+}
+
+// --- DUOLAR LOGIC ---
+function renderDuas() {
+  const container = document.getElementById('duaListContainer');
+  container.innerHTML = duolar.map(d => `
+    <div class="dua-card">
+      <div class="dua-title">${d.title}</div>
+      <div class="dua-when">${d.when}</div>
+      <div class="dua-arabic arabic">${d.ar}</div>
+      <div class="dua-meaning">${d.mean}</div>
+    </div>
+  `).join('');
+}
+
+// --- SOZLAMALAR ---
+function saveSettings() {
+  const calcMethod = document.getElementById('calcMethod').value;
+  const madhab = document.getElementById('madhab').value;
+  
+  localStorage.setItem('calcMethod', calcMethod);
+  localStorage.setItem('madhab', madhab);
+  
+  // Vaqtni qayta hisoblash
+  getLocation(false);
+}
+
+function loadSettings() {
+  const savedMethod = localStorage.getItem('calcMethod');
+  const savedMadhab = localStorage.getItem('madhab');
+  
+  if (savedMethod) document.getElementById('calcMethod').value = savedMethod;
+  if (savedMadhab) document.getElementById('madhab').value = savedMadhab;
+}
 </script>
 </body>
 </html>
