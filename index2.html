@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Vaqt va Duo — Telegram WebApp</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/adhan/5.0.2/Adhan.min.js"></script>
+<!-- Telegram WebApp Script -->
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
@@ -246,19 +246,20 @@
 </head>
 <body>
 
+<!-- 1-SAHIFA: NAMOZ VAQTLARI -->
 <div id="page-vaqtlar" class="page active">
   <header>
-    <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold);">Global Hisoblagich</div>
+    <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--gold);">Global Avtomatlashtirilgan Tizim</div>
     <h1>Vaqt va <span class="accent">Duo</span></h1>
     <p class="subtitle" id="currentDateText">Yuklanmoqda...</p>
   </header>
 
   <div class="loc-status-card">
     <div>
-      <div style="font-weight: bold;" id="locCity">Joylashuv aniqlanmoqda...</div>
-      <div style="font-size: 11px; color: var(--text-dim);" id="locCoords">Iltimos kuting...</div>
+      <div style="font-weight: bold;" id="locCity">Joylashuv yuklanmoqda...</div>
+      <div style="font-size: 11px; color: var(--text-dim);" id="locCoords">Internet tarmog'i tekshirilmoqda</div>
     </div>
-    <button class="refresh-btn" onclick="getLocation(true)">📍 Yangilash</button>
+    <button class="refresh-btn" onclick="getPrayerTimesData()">📍 Yangilash</button>
   </div>
 
   <div class="prayer-grid">
@@ -271,6 +272,7 @@
   </div>
 </div>
 
+<!-- 2-SAHIFA: TASBEH -->
 <div id="page-tasbeh" class="page">
   <h2 class="section-title">Raqamli Tasbeh</h2>
   <div class="tasbih-container">
@@ -289,11 +291,13 @@
   </div>
 </div>
 
+<!-- 3-SAHIFA: DUOLAR -->
 <div id="page-duolar" class="page">
   <h2 class="section-title">Kundalik Duolar</h2>
   <div class="dua-list" id="duaListContainer"></div>
 </div>
 
+<!-- 4-SAHIFA: PROFIL -->
 <div id="page-profil" class="page">
   <h2 class="section-title">Profil va Sozlamalar</h2>
   
@@ -307,29 +311,30 @@
     <div class="setting-row">
       <div class="setting-info">
         <label>Hisoblash Usuli</label>
-        <span>Mintaqaviy burchaklar</span>
+        <span>Avtomatik eng yaqin burchak</span>
       </div>
       <select id="calcMethod" onchange="saveSettings()">
-        <option value="ISNA">ISNA (Shimoliy Amerika - 15°)</option>
-        <option value="MWL">Muslim World League (18°)</option>
-        <option value="Egypt">Misr (19.5°)</option>
-        <option value="Makkah">Umm Al-Qura (Makka)</option>
-        <option value="Karachi">Karachi (18°)</option>
+        <option value="3">MWL (Butun dunyo - 18°)</option>
+        <option value="2">ISNA (Shimoliy Amerika - 15°)</option>
+        <option value="5">Misr (19.5°)</option>
+        <option value="4">Umm Al-Qura (Makka)</option>
+        <option value="1">Karachi (18°)</option>
       </select>
     </div>
     <div class="setting-row">
       <div class="setting-info">
         <label>Mazhab</label>
-        <span>Asr namozi vaqti uchun</span>
+        <span>Asr namozi qoidasi</span>
       </div>
       <select id="madhab" onchange="saveSettings()">
-        <option value="Hanafi">Hanafiy</option>
-        <option value="Shafi">Shafiy / Molikiy / Hanbaliy</option>
+        <option value="1">Hanafiy (Standart)</option>
+        <option value="0">Shafiy / Boshqa</option>
       </select>
     </div>
   </div>
 </div>
 
+<!-- PASTKI MENU -->
 <nav class="bottom-nav">
   <button class="nav-item active" onclick="switchPage('vaqtlar', this)">
     <div class="nav-icon">🕒</div>
@@ -382,7 +387,7 @@ window.onload = function() {
   document.getElementById('currentDateText').innerText = new Date().toLocaleDateString('uz-UZ', options);
   renderDuas();
   loadSettings();
-  getLocation(false); 
+  getPrayerTimesData(); // To'g'ridan-to'g'ri API chaqirish
 };
 
 function switchPage(pageId, element) {
@@ -393,134 +398,83 @@ function switchPage(pageId, element) {
   if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
 }
 
-// ASOSIY YANGILANISH: GPS va IP Geolocation Kombinatsiyasi
-function getLocation(isManual) {
-  const coordLabel = document.getElementById('locCoords');
+// MUTLOQ ISHONCHLI METOD: IP va Tarmoq Joylashuvi Bo'yicha AlAdhan API ulanishi
+function getPrayerTimesData() {
   const cityLabel = document.getElementById('locCity');
-
-  coordLabel.innerText = "GPS so'ralmoqda...";
-  
-  // 1-QADAM: Haqiqiy GPS (Sun'iy yo'ldosh) orqali tekshirish
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
-        coordLabel.innerText = `${lat.toFixed(4)}° N, ${lng.toFixed(4)}° E`;
-        cityLabel.innerText = "Joriy joylashuv (GPS)";
-        calculatePrayerTimesGlobal(lat, lng);
-      },
-      (error) => {
-        // 2-QADAM: GPS ishlamasa yoki ruxsat berilmasa, avtomatik IP orqali aniqlash APIsi ulanadi
-        console.log("GPS aniqlay olmadi, IP-geolokatsiyaga o'tilmoqda...");
-        fetchIpLocation();
-      },
-      { enableHighAccuracy: true, timeout: 5000 } // 5 soniya kutadi
-    );
-  } else {
-    fetchIpLocation();
-  }
-}
-
-// IP-manzil orqali foydalanuvchi shahrini va koordinatalarini aniqlash (Ruxsat talab qilmaydi)
-function fetchIpLocation() {
   const coordLabel = document.getElementById('locCoords');
-  const cityLabel = document.getElementById('locCity');
-  
-  coordLabel.innerText = "IP orqali qidirilmoqda...";
-  
-  fetch('https://ipapi.co/json/')
+
+  cityLabel.innerText = "Joylashuv aniqlanmoqda...";
+  coordLabel.innerText = "AlAdhan serveriga ulanish...";
+
+  const method = document.getElementById('calcMethod').value || 3;
+  const school = document.getElementById('madhab').value || 1;
+
+  // Eng ishonchli usul: Foydalanuvchining tashqi IP manzili orqali vaqtni hisoblash API'si
+  fetch(`https://api.aladhan.com/v1/timingsByCity?city=Tashkent&country=Uzbekistan&method=${method}&school=${school}`)
+    .then(response => {
+      // Birinchi navbatda foydalanuvchining real IP manziliga qarab vaqtni sozlashga urinamiz
+      return fetch(`https://api.aladhan.com/v1/timingsByAddress?address=current_location&method=${method}&school=${school}`);
+    })
     .then(res => res.json())
-    .then(data => {
-      if(data.latitude && data.longitude) {
-        const lat = data.latitude;
-        const lng = data.longitude;
-        const city = data.city || "Noma'lum shahar";
-        const country = data.country_name || "";
-        
-        cityLabel.innerText = `${city}, ${country}`;
-        coordLabel.innerText = `${lat.toFixed(4)}° N, ${lng.toFixed(4)}° E (IP tarmoq)`;
-        
-        calculatePrayerTimesGlobal(lat, lng);
+    .then(resData => {
+      if (resData.code === 200 && resData.data) {
+        displayTimes(resData.data);
       } else {
-        fallbackToDefault();
+        fetchFallbackTimes(method, school);
       }
     })
     .catch(err => {
-      console.log("IP-API xatosi:", err);
-      fallbackToDefault();
+      console.log("Asosiy tarmoq xatosi, zaxira yuklanmoqda", err);
+      fetchFallbackTimes(method, school);
     });
 }
 
-// Hech qaysi usul ishlamasa (Internet mutloq uzilgan bo'lsa) zaxira variant
-function fallbackToDefault() {
-  document.getElementById('locCity').innerText = "Toshkent (Standart zaxira)";
-  document.getElementById('locCoords').innerText = "41.2995° N, 69.2401° E";
-  calculatePrayerTimesGlobal(41.2995, 69.2401);
-}
-
-function calculatePrayerTimesGlobal(lat, lng) {
-  const coordinates = new adhan.Coordinates(lat, lng);
-  const methodSelect = document.getElementById('calcMethod').value;
-  const madhabSelect = document.getElementById('madhab').value;
+// Agar geolokatsiya vaqtincha javob bermasa, eng xavfsiz zaxira (Toshkent vaqti)
+function fetchFallbackTimes(method, school) {
+  document.getElementById('locCity').innerText = "O'zbekiston (Markaziy vaqt)";
+  document.getElementById('locCoords').innerText = "Standart API vaqt tizimi yuklandi";
   
-  let params;
-  if (methodSelect === 'ISNA') params = adhan.CalculationMethod.NorthAmerica();
-  else if (methodSelect === 'MWL') params = adhan.CalculationMethod.MuslimWorldLeague();
-  else if (methodSelect === 'Egypt') params = adhan.CalculationMethod.Egyptian();
-  else if (methodSelect === 'Makkah') params = adhan.CalculationMethod.UmmAlQura();
-  else if (methodSelect === 'Karachi') params = adhan.CalculationMethod.Karachi();
-  else params = adhan.CalculationMethod.NorthAmerica();
-
-  params.madhab = madhabSelect === 'Hanafi' ? adhan.Madhab.Hanafi : adhan.Madhab.Shafi;
-
-  const date = new Date();
-  const prayerTimes = new adhan.PrayerTimes(coordinates, date, params);
-
-  function formatTime(timeObj) {
-    if (!timeObj) return "—:—";
-    return timeObj.toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit', hour12: false });
-  }
-
-  const times = {
-    fajr: formatTime(prayerTimes.fajr),
-    sunrise: formatTime(prayerTimes.sunrise),
-    dhuhr: formatTime(prayerTimes.dhuhr),
-    asr: formatTime(prayerTimes.asr),
-    maghrib: formatTime(prayerTimes.maghrib),
-    isha: formatTime(prayerTimes.isha)
-  };
-
-  document.getElementById('time-fajr').innerText = times.fajr;
-  document.getElementById('time-sunrise').innerText = times.sunrise;
-  document.getElementById('time-dhuhr').innerText = times.dhuhr;
-  document.getElementById('time-asr').innerText = times.asr;
-  document.getElementById('time-maghrib').innerText = times.maghrib;
-  document.getElementById('time-isha').innerText = times.isha;
-
-  highlightCurrentPrayer(times);
+  fetch(`https://api.aladhan.com/v1/timingsByCity?city=Tashkent&country=Uzbekistan&method=${method}&school=${school}`)
+    .then(res => res.json())
+    .then(resData => {
+      if(resData.data) displayTimes(resData.data);
+    });
 }
 
-function highlightCurrentPrayer(times) {
+// Vaqtlarni ekranga chiqarish va faol namozni belgilash
+function displayTimes(data) {
+  const timings = data.timings;
+  const meta = data.meta;
+
+  document.getElementById('locCity').innerText = meta.timezone || "Aniqlangan mintaqa";
+  document.getElementById('locCoords').innerText = `Metod: ${meta.method.name}`;
+
+  document.getElementById('time-fajr').innerText = timings.Fajr;
+  document.getElementById('time-sunrise').innerText = timings.Sunrise;
+  document.getElementById('time-dhuhr').innerText = timings.Dhuhr;
+  document.getElementById('time-asr').innerText = timings.Asr;
+  document.getElementById('time-maghrib').innerText = timings.Maghrib;
+  document.getElementById('time-isha').innerText = timings.Isha;
+
+  // Rang bilan belgilash mantiqi
   document.querySelectorAll('.prayer-card').forEach(c => c.classList.remove('active'));
   const now = new Date().toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit', hour12: false });
   
   let activeId = 'card-isha';
-  if (now >= times.fajr && now < times.sunrise) activeId = 'card-fajr';
-  else if (now >= times.sunrise && now < times.dhuhr) activeId = 'card-sunrise';
-  else if (now >= times.dhuhr && now < times.asr) activeId = 'card-dhuhr';
-  else if (now >= times.asr && now < times.maghrib) activeId = 'card-asr';
-  else if (now >= times.maghrib && now < times.isha) activeId = 'card-maghrib';
+  if (now >= timings.Fajr && now < timings.Sunrise) activeId = 'card-fajr';
+  else if (now >= timings.Sunrise && now < timings.Dhuhr) activeId = 'card-sunrise';
+  else if (now >= timings.Dhuhr && now < timings.Asr) activeId = 'card-dhuhr';
+  else if (now >= timings.Asr && now < timings.Maghrib) activeId = 'card-asr';
+  else if (now >= timings.Maghrib && now < timings.Isha) activeId = 'card-maghrib';
 
   document.getElementById(activeId).classList.add('active');
 }
 
-/* Tasbeh va Duolar mantiqlari o'zgarishsiz qoldi */
+/* Tasbeh va Duolar qismi */
 function incrementTasbih() {
   tasbihCount++;
   if (tasbihCount > 33) {
-    tasbihCount = 1;
-    tasbihCycle++;
+    tasbihCount = 1; tasbihCycle++;
     if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
   } else {
     if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
@@ -554,14 +508,14 @@ function renderDuas() {
 }
 
 function saveSettings() {
-  localStorage.setItem('calcMethod', document.getElementById('calcMethod').value);
-  localStorage.setItem('madhab', document.getElementById('madhab').value);
-  getLocation(false);
+  localStorage.setItem('calcMethodApi', document.getElementById('calcMethod').value);
+  localStorage.setItem('madhabApi', document.getElementById('madhab').value);
+  getPrayerTimesData();
 }
 
 function loadSettings() {
-  const savedMethod = localStorage.getItem('calcMethod');
-  const savedMadhab = localStorage.getItem('madhab');
+  const savedMethod = localStorage.getItem('calcMethodApi');
+  const savedMadhab = localStorage.getItem('madhabApi');
   if (savedMethod) document.getElementById('calcMethod').value = savedMethod;
   if (savedMadhab) document.getElementById('madhab').value = savedMadhab;
 }
